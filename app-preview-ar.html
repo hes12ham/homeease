@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هوم إيز — عرض تفاعلي للتطبيق</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #1565C0;
+  --blue-d: #0d47a1;
+  --blue-l: #e3f2fd;
+  --orange: #FF6F00;
+  --orange-l: #fff3e0;
+  --teal: #00897B;
+  --teal-l: #e0f2f1;
+  --red: #D32F2F;
+  --bg: #0f1923;
+  --sf: #182633;
+  --sf2: #1e3044;
+  --txt: #e8edf2;
+  --dim: #7a8fa3;
+  --pbg: #f5f7fa;
+  --card: #fff;
+  --r: 16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+.hdr{text-align:center;padding:40px 20px 16px}
+.hdr .logo{display:inline-flex;align-items:center;gap:12px;margin-bottom:12px}
+.hdr .logo-i{width:46px;height:46px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.hdr .logo h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,var(--blue-l),#b3e5fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{color:var(--dim);font-size:14px;max-width:460px;margin:0 auto;line-height:1.7}
+
+/* NAV */
+.nav-w{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,var(--bg) 60%,transparent);padding:10px 0 20px}
+.nav{display:flex;gap:7px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex-shrink:0;padding:7px 16px;border:1.5px solid var(--sf2);background:var(--sf);color:var(--dim);border-radius:99px;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:.25s;white-space:nowrap}
+.nav button:hover{border-color:var(--blue);color:var(--txt)}
+.nav button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* PHONE */
+.stage{display:flex;justify-content:center;padding:0 20px 50px}
+.phone{width:375px;height:812px;background:#000;border-radius:52px;padding:14px;box-shadow:0 0 0 2px #2a2a2a,0 40px 100px rgba(0,0,0,.5),0 0 120px rgba(21,101,192,.12);position:relative}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:150px;height:28px;background:#000;border-radius:0 0 18px 18px;z-index:20}
+.notch::after{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:60px;height:6px;background:#1a1a1a;border-radius:99px}
+.scr{width:100%;height:100%;background:var(--pbg);border-radius:40px;overflow:hidden;position:relative;direction:rtl}
+
+/* SCREENS */
+.s{display:none;width:100%;height:100%;flex-direction:column;overflow-y:auto;scrollbar-width:none;direction:rtl}
+.s::-webkit-scrollbar{display:none}
+.s.on{display:flex}
+
+/* Status bar */
+.sb{height:48px;padding:14px 24px 0;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#333;flex-shrink:0;direction:ltr}
+
+/* App bar */
+.ab{padding:8px 20px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ab.pr{background:var(--blue);color:#fff;padding-top:12px}
+.ab h2{font-size:17px;font-weight:700;flex:1}
+.bk{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;border:none;background:none;color:inherit}
+
+/* Bottom nav */
+.bn{position:absolute;bottom:0;left:0;right:0;height:70px;background:#fff;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-around;padding-bottom:8px;z-index:10}
+.bn .ni{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#999;cursor:pointer;position:relative}
+.bn .ni.on{color:var(--blue)}
+.bn .ni .ic{font-size:22px;line-height:1}
+.bn .ni .bd{position:absolute;top:-4px;right:-8px;background:var(--orange);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+
+/* Shared */
+.btn1{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:'Cairo';cursor:pointer}
+.crd{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.04);margin:0 20px 12px;padding:16px}
+.stit{padding:0 20px;font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:10px}
+
+/* ======= SPLASH ======= */
+#s-splash{background:linear-gradient(135deg,var(--blue),var(--blue-d));align-items:center;justify-content:center}
+#s-splash .sl{width:100px;height:100px;background:rgba(255,255,255,.15);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:52px;animation:sp 2s ease-in-out infinite}
+#s-splash h1{color:#fff;font-size:34px;font-weight:800;margin-top:18px}
+#s-splash p{color:rgba(255,255,255,.6);font-size:14px;margin-top:4px}
+@keyframes sp{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+
+/* ======= LOGIN ======= */
+#s-login{background:#fff}
+.lh{background:linear-gradient(135deg,var(--blue),var(--blue-d));padding:56px 24px 36px;text-align:center;color:#fff;border-radius:0 0 32px 32px}
+.lh .li{font-size:48px;margin-bottom:10px}
+.lh h2{font-size:24px;font-weight:800}
+.lh p{opacity:.7;font-size:13px;margin-top:4px}
+.lf{padding:24px}
+.iw{position:relative;margin-bottom:14px}
+.iw .ii{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:16px}
+.inf{width:100%;padding:13px 44px 13px 16px;border:1.5px solid #e0e4e8;border-radius:14px;font-size:14px;font-family:'Cairo';background:#f8f9fb;color:#333;outline:none;direction:rtl}
+.sl-row{display:flex;gap:12px;margin-top:18px}
+.sl-btn{flex:1;padding:12px;border:1.5px solid #e0e4e8;border-radius:12px;background:#fff;text-align:center;font-size:18px;cursor:pointer}
+.lt{text-align:center;margin-top:16px;font-size:13px;color:var(--blue);font-weight:600;cursor:pointer}
+
+/* ======= HOME ======= */
+.hg{padding:8px 20px 0;font-size:13px;color:#888;direction:rtl}
+.hg strong{display:block;font-size:21px;color:#1a1a2e;margin-top:2px}
+.srch{margin:12px 20px 14px;background:#fff;border:1.5px solid #e8ecf0;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;color:#aaa;font-size:13px;direction:rtl}
+.emb{margin:0 20px 14px;padding:14px 16px;background:linear-gradient(135deg,#D32F2F,#F44336);border-radius:16px;display:flex;align-items:center;gap:14px;color:#fff;cursor:pointer;direction:rtl}
+.emb .ei{width:42px;height:42px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.emb h4{font-size:13px;font-weight:700}
+.emb p{font-size:11px;opacity:.8}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 20px;margin-bottom:20px}
+.ci{text-align:center;cursor:pointer}
+.ci .cci{width:50px;height:50px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 5px}
+.ci .cl{font-size:10px;font-weight:600;color:#555;line-height:1.3}
+.si{display:flex;align-items:center;gap:14px;padding:12px 16px;background:#fff;border-radius:14px;margin:0 20px 10px;box-shadow:0 1px 4px rgba(0,0,0,.04);direction:rtl;cursor:pointer}
+.si .sii{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si .sin{flex:1}
+.si .sin h4{font-size:13px;font-weight:600;color:#1a1a2e}
+.si .sin p{font-size:11px;color:#999;margin-top:2px}
+.si .sin .rt{font-size:11px;color:#f59e0b;margin-top:3px}
+.si .sp{font-size:17px;font-weight:700;color:var(--blue);text-align:left}
+.si .sp small{display:block;font-size:10px;font-weight:400;color:#999}
+
+/* ======= DETAILS ======= */
+.dh{padding:56px 24px 28px;color:#fff;position:relative}
+.dh.pl{background:linear-gradient(135deg,#1565C0,#0d47a1)}
+.dh .di{font-size:44px;margin-bottom:10px}
+.dh h2{font-size:22px;font-weight:800}
+.dh p{opacity:.8;font-size:13px;margin-top:4px}
+.pc{margin:-18px 20px 14px;background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 20px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2;direction:rtl}
+.pc .pr{font-size:30px;font-weight:800;color:var(--blue)}
+.pc .pr small{font-size:14px;font-weight:400;color:#999}
+.pc .wr{background:var(--teal-l);color:var(--teal);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600}
+.il{padding:0 20px;margin-bottom:14px}
+.il .it{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:#555}
+.il .ck{color:var(--teal);font-size:15px}
+.acb{position:absolute;bottom:0;left:0;right:0;padding:14px 20px;background:#fff;border-top:1px solid #eee;z-index:10}
+
+/* ======= CART ======= */
+.cti{display:flex;align-items:center;gap:14px;padding:12px;background:#fff;border-radius:14px;margin:0 20px 10px;direction:rtl}
+.cti .cii{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.cti .cif{flex:1}
+.cti .cif h4{font-size:13px;font-weight:600}
+.cti .cif p{font-size:11px;color:#999}
+.cq{display:flex;align-items:center;gap:8px;background:var(--blue-l);border-radius:10px;padding:4px 8px}
+.cq span{font-weight:700;font-size:14px;color:var(--blue)}
+.cq button{width:24px;height:24px;border:none;background:var(--blue);color:#fff;border-radius:7px;font-size:13px;cursor:pointer;font-family:'Cairo'}
+.ctb{position:absolute;bottom:70px;left:0;right:0;padding:14px 20px;background:#fff;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;direction:rtl}
+.ctb .tl{font-size:13px;color:#888}
+.ctb .tl strong{display:block;font-size:20px;color:var(--blue)}
+.ckb{padding:11px 26px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:13px;font-family:'Cairo';cursor:pointer}
+
+/* ======= BOOKING ======= */
+.stp{display:flex;gap:14px;margin-bottom:18px;direction:rtl}
+.sti{display:flex;flex-direction:column;align-items:center}
+.sd{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;background:#ccc}
+.sd.dn{background:var(--teal)}
+.sd.ac{background:var(--blue)}
+.sln{width:2px;flex:1;background:#e0e0e0;margin:4px 0}
+.sln.dn{background:var(--teal)}
+.sc{flex:1;padding-top:3px}
+.sc h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.sc p{font-size:12px;color:#888}
+
+.cm{background:#fff;border-radius:14px;padding:12px;margin-top:8px}
+.cmh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;font-weight:600}
+.cmg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-size:11px}
+.cmg .dn{color:#999;font-size:9px;font-weight:600;padding:4px 0}
+.cmg .d{padding:7px 0;border-radius:9px;cursor:pointer}
+.cmg .d.sel{background:var(--blue);color:#fff;font-weight:700}
+.cmg .d.td{color:var(--blue);font-weight:600}
+
+.ts{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.tsi{display:flex;align-items:center;gap:10px;padding:11px 14px;background:#fff;border:1.5px solid #e8ecf0;border-radius:12px;font-size:12px;font-weight:500;direction:rtl}
+.tsi.sel{border-color:var(--blue);background:var(--blue-l)}
+.tsi .ti{font-size:16px}
+
+/* ======= PAYMENT ======= */
+.smc{background:#fff;border-radius:16px;padding:18px;margin:0 20px 14px;direction:rtl}
+.sr{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#666}
+.sr.tot{border-top:1.5px solid #eee;margin-top:8px;padding-top:10px;font-size:17px;font-weight:700;color:#1a1a2e}
+.sr.tot .vl{color:var(--blue)}
+.sr.dsc{color:var(--teal)}
+.lb{margin:0 20px 14px;padding:12px 14px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:14px;display:flex;align-items:center;gap:10px;font-size:12px;direction:rtl}
+.lb .st{font-size:22px}
+.tg{width:42px;height:22px;background:var(--orange);border-radius:99px;position:relative;flex-shrink:0;margin-right:auto}
+.tg::after{content:'';width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px}
+.po{display:flex;align-items:center;gap:12px;padding:13px 16px;margin:0 20px 8px;background:#fff;border:1.5px solid #e8ecf0;border-radius:14px;font-size:13px;font-weight:500;direction:rtl;cursor:pointer}
+.po.sel{border-color:var(--blue);background:var(--blue-l)}
+.po .pi{font-size:20px}
+.po .pc2{margin-right:auto;color:var(--blue);font-size:18px}
+
+/* ======= CONFIRMATION ======= */
+#s-confirm{background:#fff;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+.ccn{width:76px;height:76px;background:var(--teal-l);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--teal);margin-bottom:18px;animation:cb .6s ease}
+@keyframes cb{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+#s-confirm h2{font-size:22px;font-weight:800;color:#1a1a2e}
+.bid{color:var(--blue);font-size:14px;font-weight:600;margin-top:6px}
+.qrc{width:130px;height:130px;background:#f5f7fa;border-radius:16px;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:72px}
+.wbg{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;background:var(--teal-l);border-radius:12px;color:var(--teal);font-size:12px;font-weight:600;margin-top:14px}
+
+/* ======= TECHNICIAN TRACKING (UBER-STYLE) ======= */
+.map-area{position:relative;height:280px;background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 30%,#e0e0e0 60%,#efebe9 100%);overflow:hidden;flex-shrink:0}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:40px 40px}
+.map-road-h{position:absolute;height:6px;background:rgba(255,255,255,.8);border-radius:3px}
+.map-road-v{position:absolute;width:6px;background:rgba(255,255,255,.8);border-radius:3px}
+.map-route{position:absolute;border:2.5px dashed var(--blue);border-radius:0;z-index:2}
+.tech-dot{position:absolute;width:20px;height:20px;z-index:5}
+.tech-dot::before{content:'';position:absolute;inset:0;background:var(--blue);border-radius:50%;animation:tdp 1.5s ease-in-out infinite}
+.tech-dot::after{content:'';position:absolute;inset:-6px;background:rgba(21,101,192,.2);border-radius:50%;animation:tdp 1.5s ease-in-out infinite}
+@keyframes tdp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.5}}
+.user-pin{position:absolute;z-index:5;font-size:28px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+.eta-card{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-radius:14px;padding:12px 16px;box-shadow:0 4px 16px rgba(0,0,0,.1);direction:rtl;z-index:6}
+.eta-card .eta-t{font-size:11px;color:#888}
+.eta-card .eta-v{font-size:22px;font-weight:800;color:var(--blue)}
+.eta-card .eta-v small{font-size:12px;font-weight:400;color:#888}
+.eta-bar{width:100%;height:6px;background:#e0e0e0;border-radius:3px;margin-top:8px;overflow:hidden}
+.eta-bar .fill{height:100%;width:65%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:3px;animation:etaf 2s ease-in-out infinite}
+@keyframes etaf{0%,100%{width:60%}50%{width:75%}}
+
+.tech-card{margin:0 20px;background:#fff;border-radius:20px;padding:18px;box-shadow:0 -4px 24px rgba(0,0,0,.06);direction:rtl;position:relative;margin-top:-30px;z-index:8}
+.tc-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.tc-av{width:56px;height:56px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--blue);flex-shrink:0;position:relative}
+.tc-av .onl{position:absolute;bottom:2px;left:2px;width:12px;height:12px;background:#4caf50;border-radius:50%;border:2px solid #fff}
+.tc-info h3{font-size:16px;font-weight:700;color:#1a1a2e}
+.tc-info .tc-rt{font-size:12px;color:#f59e0b;margin-top:2px}
+.tc-info .tc-sp{display:inline-block;margin-top:4px;padding:3px 10px;background:var(--blue-l);color:var(--blue);border-radius:6px;font-size:10px;font-weight:600}
+.tc-vehicle{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8f9fb;border-radius:12px;font-size:12px;color:#666;margin-bottom:14px;direction:rtl}
+.tc-vehicle .tv-icon{font-size:18px}
+.tc-actions{display:flex;gap:10px}
+.tc-actions button{flex:1;padding:12px;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'Cairo';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.tc-call{background:#e8f5e9;color:#2e7d32}
+.tc-chat{background:var(--blue-l);color:var(--blue)}
+.tc-cancel{margin:14px 20px;text-align:center;color:var(--red);font-size:13px;cursor:pointer;font-weight:600}
+
+/* ======= CHAT WITH TECH ======= */
+.ch-bar{padding:10px 20px;display:flex;align-items:center;gap:12px;background:var(--blue);color:#fff;direction:rtl;flex-shrink:0}
+.ch-av{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;position:relative}
+.ch-av .onl2{position:absolute;bottom:0;left:0;width:10px;height:10px;background:#4caf50;border-radius:50%;border:2px solid var(--blue)}
+.ch-nm{flex:1}
+.ch-nm h3{font-size:15px;font-weight:700}
+.ch-nm p{font-size:10px;opacity:.7}
+
+.msgs{flex:1;padding:16px 20px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.mg{max-width:78%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.6;direction:rtl}
+.mg.usr{align-self:flex-start;background:var(--blue);color:#fff;border-bottom-right-radius:16px;border-bottom-left-radius:4px}
+.mg.tch{align-self:flex-end;background:#fff;color:#333;border-bottom-left-radius:16px;border-bottom-right-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.mg .mt{font-size:9px;opacity:.5;margin-top:4px}
+
+.qr-chips{display:flex;gap:6px;padding:8px 16px;overflow-x:auto;flex-shrink:0}
+.qr-chips span{flex-shrink:0;padding:7px 14px;background:var(--blue-l);color:var(--blue);border-radius:99px;font-size:11px;font-weight:600;cursor:pointer}
+
+.chin{padding:10px 16px;background:#fff;border-top:1px solid #eee;display:flex;align-items:center;gap:8px;direction:rtl;flex-shrink:0}
+.chinp{flex:1;padding:10px 16px;background:#f5f7fa;border:none;border-radius:99px;font-size:13px;font-family:'Cairo';outline:none;direction:rtl}
+.sndb{width:36px;height:36px;background:var(--blue);border:none;border-radius:50%;color:#fff;font-size:16px;cursor:pointer}
+
+/* ======= TRACKING ======= */
+.tls{display:flex;gap:14px;direction:rtl}
+.tli{display:flex;flex-direction:column;align-items:center}
+.tld{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:#e0e0e0;color:#999}
+.tld.dn{background:var(--blue);color:#fff}
+.tld.cr{background:var(--blue);color:#fff;box-shadow:0 0 0 5px rgba(21,101,192,.15)}
+.tll{width:2px;height:28px;background:#e0e0e0}
+.tll.dn{background:var(--blue)}
+.tlc{flex:1;padding:4px 0 22px}
+.tlc h4{font-size:13px;font-weight:600}
+.tlc p{font-size:11px;color:#999}
+.tlc .crl{font-size:11px;color:var(--blue);font-weight:600}
+
+.qrc2{text-align:center;background:#fff;border-radius:16px;padding:18px;margin:14px 20px}
+.qrc2 .qrp{width:110px;height:110px;background:#f0f0f0;border-radius:12px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:60px;color:#333}
+.qrc2 p{font-size:11px;color:#999}
+
+/* ======= RATING ======= */
+#s-rating{background:#fff}
+.rat-top{text-align:center;padding:56px 24px 20px}
+.rat-av{width:72px;height:72px;border-radius:50%;background:var(--blue-l);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--blue);margin:0 auto 12px}
+.rat-top h3{font-size:18px;font-weight:700;color:#1a1a2e}
+.rat-top p{font-size:14px;color:#888;margin-top:4px}
+.stars{display:flex;justify-content:center;gap:8px;margin:20px 0;font-size:36px;cursor:pointer}
+.stars span.filled{color:#f59e0b}
+.stars span.empty{color:#e0e0e0}
+.cat-rat{padding:0 24px;margin-bottom:20px}
+.cr-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f5f5f5;font-size:13px;color:#555;direction:rtl}
+.cr-item .cr-stars{font-size:14px;color:#f59e0b;letter-spacing:2px}
+.rat-ta{margin:0 24px 16px;padding:14px;border:1.5px solid #e0e4e8;border-radius:14px;font-size:13px;font-family:'Cairo';background:#f8f9fb;resize:none;width:calc(100% - 48px);height:100px;outline:none;direction:rtl}
+.skip{text-align:center;margin-top:12px;color:#999;font-size:13px;cursor:pointer}
+
+/* ======= PROFILE ======= */
+.ph{padding:56px 24px 28px;background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;text-align:center;border-radius:0 0 28px 28px}
+.pav{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto 10px}
+.ph h3{font-size:19px;font-weight:700}
+.ph p{opacity:.7;font-size:13px}
+
+.ptc{margin:-14px 20px 14px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative;z-index:2;direction:rtl}
+.ptc .star{font-size:30px}
+.ptc .ptv{font-size:26px;font-weight:800;color:#d97706}
+.ptc .ptl{font-size:11px;color:#92400e}
+
+.sti2{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid #f0f0f0;font-size:13px;cursor:pointer;direction:rtl}
+.sti2 .si2{width:34px;height:34px;background:var(--blue-l);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:15px;flex-shrink:0}
+.sti2 .sl2{flex:1;font-weight:500}
+.sti2 .sa2{color:#ccc;font-size:16px}
+.tgsm{width:38px;height:20px;background:var(--blue);border-radius:99px;position:relative}
+.tgsm::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px}
+.tgsm.off{background:#ccc}
+.tgsm.off::after{left:auto;right:2px}
+.lob{margin:18px 20px;padding:13px;border:1.5px solid var(--red);background:transparent;color:var(--red);border-radius:14px;font-size:13px;font-weight:600;width:calc(100% - 40px);font-family:'Cairo';cursor:pointer}
+
+/* ======= SUPPORT ======= */
+.qa-row{display:flex;gap:8px;padding:10px 16px;background:rgba(21,101,192,.04);flex-shrink:0}
+.qa-row div{flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;font-size:10px;cursor:pointer;line-height:1.6}
+
+/* ======= TECH REGISTRATION ======= */
+.step-bar{display:flex;align-items:center;padding:16px 20px;direction:rtl}
+.step-bar .sb-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:#e0e0e0;color:#999;flex-shrink:0}
+.step-bar .sb-dot.dn{background:var(--teal);color:#fff}
+.step-bar .sb-dot.ac{background:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(21,101,192,.15)}
+.step-bar .sb-line{flex:1;height:3px;background:#e0e0e0;margin:0 4px}
+.step-bar .sb-line.dn{background:var(--teal)}
+.step-bar .sb-label{font-size:8px;margin-top:3px;color:#999;text-align:center}
+.step-bar .sb-label.ac{color:var(--blue);font-weight:600}
+
+.frm-title{font-size:17px;font-weight:700;color:#1a1a2e;padding:0 20px;margin-bottom:4px}
+.frm-sub{font-size:12px;color:#999;padding:0 20px;margin-bottom:16px}
+.frm-field{margin:0 20px 14px;direction:rtl}
+.frm-field label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#555}
+.frm-input{width:100%;padding:11px 14px 11px 14px;border:1.5px solid #e0e4e8;border-radius:12px;font-size:13px;font-family:'Cairo';background:#f8f9fb;direction:rtl;outline:none}
+.frm-input:focus{border-color:var(--blue)}
+.frm-select{width:100%;padding:11px 14px;border:1.5px solid #e0e4e8;border-radius:12px;font-size:13px;font-family:'Cairo';background:#f8f9fb;direction:rtl;outline:none;appearance:none;-webkit-appearance:none}
+
+.spec-chips{display:flex;flex-wrap:wrap;gap:7px;padding:0 20px;margin-bottom:14px}
+.spec-chip{padding:7px 14px;border:1.5px solid #e0e4e8;border-radius:10px;font-size:11px;font-weight:500;cursor:pointer;transition:.2s}
+.spec-chip.sel{background:var(--blue-l);border-color:var(--blue);color:var(--blue);font-weight:700}
+
+.edu-opt{display:flex;align-items:center;gap:8px;padding:8px 20px;font-size:12px;direction:rtl}
+.edu-radio{width:16px;height:16px;border-radius:50%;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.edu-radio.sel{border-color:var(--blue)}
+.edu-radio.sel::after{content:'';width:8px;height:8px;background:var(--blue);border-radius:50%}
+
+.upload-box{margin:0 20px 14px}
+.upload-box label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:#555}
+.upload-area{width:100%;height:90px;border:2px dashed #ccc;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fafafa;cursor:pointer;transition:.2s;gap:4px}
+.upload-area:hover{border-color:var(--blue);background:var(--blue-l)}
+.upload-area .up-icon{font-size:28px;color:#bbb}
+.upload-area .up-txt{font-size:11px;color:#999}
+.upload-area.circ{width:110px;height:110px;border-radius:50%;margin:0 auto}
+.upload-area.done{border-style:solid;border-color:var(--teal);background:var(--teal-l)}
+.upload-area.done .up-icon{color:var(--teal)}
+.upload-area.done .up-txt{color:var(--teal);font-weight:600}
+
+.review-card{background:#fff;border-radius:16px;padding:16px;margin:0 20px 12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.rv-row{display:flex;padding:5px 0;font-size:12px;direction:rtl}
+.rv-row .rv-l{width:75px;color:#999}
+.rv-row .rv-v{flex:1;font-weight:600;color:#333}
+.rv-photos{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.rv-ph{width:60px;height:42px;background:#f0f0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999}
+.rv-ph.done{background:var(--teal-l);color:var(--teal)}
+
+.chk-row{display:flex;align-items:flex-start;gap:8px;padding:6px 20px;font-size:11px;color:#555;direction:rtl;line-height:1.5}
+.chk-box{width:18px;height:18px;border:2px solid var(--blue);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:11px;color:var(--blue);font-weight:700}
+
+.frm-nav{padding:14px 20px;display:flex;gap:10px}
+.frm-nav .fn-prev{flex:1;padding:12px;border:1.5px solid #e0e4e8;background:#fff;border-radius:12px;font-family:'Cairo';font-size:13px;font-weight:600;cursor:pointer}
+.frm-nav .fn-next{flex:2;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-family:'Cairo';font-size:13px;font-weight:700;cursor:pointer}
+
+/* ======= SUBMITTED ======= */
+.sub-screen{align-items:center;justify-content:center;text-align:center;padding:40px 24px;background:#fff}
+.sub-icon{width:90px;height:90px;background:var(--orange-l);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:20px}
+.sub-status{display:inline-block;padding:8px 20px;background:var(--orange-l);border-radius:10px;font-size:13px;font-weight:600;color:#e65100;margin-top:16px}
+
+/* ======= TECH DASHBOARD ======= */
+.td-header{padding:24px 20px 16px;background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border-radius:0 0 24px 24px;direction:rtl}
+.td-header .td-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.td-av2{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
+.td-header h3{font-size:16px;font-weight:700}
+.td-header p{font-size:12px;opacity:.7}
+.td-toggle{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;font-size:12px}
+.td-toggle .tg2{width:36px;height:20px;background:#4caf50;border-radius:99px;position:relative}
+.td-toggle .tg2::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px}
+
+.td-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 20px;direction:rtl}
+.td-stat{background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.td-stat .ts-val{font-size:24px;font-weight:800}
+.td-stat .ts-lbl{font-size:10px;color:#888;margin-top:2px}
+
+.td-job{background:#fff;border-radius:14px;padding:14px;margin:0 20px 10px;direction:rtl;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.td-job h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.td-job p{font-size:11px;color:#888}
+.td-job .td-actions{display:flex;gap:8px;margin-top:10px}
+.td-job .td-actions button{flex:1;padding:9px;border:none;border-radius:10px;font-family:'Cairo';font-size:12px;font-weight:700;cursor:pointer}
+.td-accept{background:#e8f5e9;color:#2e7d32}
+.td-reject{background:#fce4ec;color:#c62828}
+
+/* INFO PANEL */
+.info{max-width:420px;margin:0 auto;padding:0 24px 50px;direction:rtl}
+.info h3{font-size:17px;font-weight:700;margin-bottom:6px}
+.info p{color:var(--dim);font-size:13px;line-height:1.7}
+.fch{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.fch .fc{padding:5px 12px;background:var(--sf2);border-radius:8px;font-size:11px;color:var(--dim)}
+
+@media(max-width:500px){
+  .phone{width:100%;max-width:375px;height:85vh;border-radius:0;padding:0;box-shadow:none}
+  .notch{display:none}
+  .scr{border-radius:0}
+  .stage{padding:0 0 30px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo"><div class="logo-i">🏠</div><h1>هوم إيز</h1></div>
+  <p>عرض تفاعلي لجميع شاشات التطبيق — اضغط على أي شاشة للاستكشاف</p>
+</div>
+
+<div class="nav-w">
+  <div class="nav" id="nav">
+    <button class="on" onclick="go('splash',this)">البداية</button>
+    <button onclick="go('login',this)">تسجيل الدخول</button>
+    <button onclick="go('creg',this)">👤 تسجيل عميل</button>
+    <button onclick="go('otp',this)">📱 كود التأكيد</button>
+    <button onclick="go('home',this)">الرئيسية</button>
+    <button onclick="go('details',this)">تفاصيل الخدمة</button>
+    <button onclick="go('cart',this)">السلة</button>
+    <button onclick="go('booking',this)">الحجز</button>
+    <button onclick="go('payment',this)">الدفع</button>
+    <button onclick="go('confirm',this)">التأكيد</button>
+    <button onclick="go('tech',this)">⭐ تتبع الفني</button>
+    <button onclick="go('tchat',this)">💬 محادثة الفني</button>
+    <button onclick="go('tracking',this)">تتبع الطلب</button>
+    <button onclick="go('rating',this)">التقييم</button>
+    <button onclick="go('profile',this)">حسابي</button>
+    <button onclick="go('support',this)">الدعم</button>
+    <button onclick="go('treg1',this)">🔧 تسجيل فني ١</button>
+    <button onclick="go('treg2',this)">🔧 تسجيل فني ٢</button>
+    <button onclick="go('treg3',this)">🔧 تسجيل فني ٣</button>
+    <button onclick="go('treg4',this)">🔧 مراجعة وإرسال</button>
+    <button onclick="go('tsub',this)">⏳ قيد المراجعة</button>
+    <button onclick="go('tdash',this)">📊 لوحة الفني</button>
+  </div>
+</div>
+
+<div class="stage">
+<div class="phone"><div class="notch"></div>
+<div class="scr">
+
+<!-- SPLASH -->
+<div class="s on" id="s-splash">
+  <div class="sl">🏠</div>
+  <h1>هوم إيز</h1>
+  <p>خدمات منزلية بكل سهولة</p>
+</div>
+
+<!-- LOGIN -->
+<div class="s" id="s-login">
+  <div class="lh"><div class="li">🏠</div><h2>هوم إيز</h2><p>خدمات منزلية بكل سهولة</p></div>
+  <div class="lf">
+    <div style="font-size:13px;font-weight:600;margin-bottom:5px">رقم الموبايل</div>
+    <div class="iw"><span class="ii">📱</span><input class="inf" placeholder="01XXXXXXXXX" readonly></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:5px">كلمة المرور</div>
+    <div class="iw"><span class="ii">🔒</span><input class="inf" type="password" value="••••••••" readonly><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#aaa;cursor:pointer">👁️</span></div>
+    <div style="text-align:center;margin-bottom:4px"><span style="font-size:12px;color:var(--blue);cursor:pointer">نسيت كلمة المرور؟</span></div>
+    <button class="btn1" onclick="go('home')">تسجيل الدخول</button>
+    <div style="display:flex;align-items:center;gap:12px;margin:18px 0"><div style="flex:1;height:1px;background:#e0e0e0"></div><span style="font-size:12px;color:#999">أو</span><div style="flex:1;height:1px;background:#e0e0e0"></div></div>
+    <button style="width:100%;padding:12px;border:1.5px solid #e0e4e8;border-radius:12px;background:#fff;font-family:'Cairo';font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-size:18px;font-weight:800">G</span> تسجيل بحساب جوجل</button>
+    <div style="text-align:center;margin-top:22px;font-size:15px;font-weight:700;color:#333">ليس لديك حساب؟</div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <div onclick="go('creg')" style="flex:1;padding:20px 10px;background:var(--blue-l);border:1.5px solid rgba(21,101,192,.2);border-radius:16px;text-align:center;cursor:pointer">
+        <div style="font-size:34px">👤</div>
+        <div style="font-size:15px;font-weight:700;color:var(--blue);margin-top:8px">عميل</div>
+        <div style="font-size:10px;color:rgba(21,101,192,.7);margin-top:3px">احجز خدمات منزلية</div>
+      </div>
+      <div onclick="go('treg1')" style="flex:1;padding:20px 10px;background:var(--teal-l);border:1.5px solid rgba(0,137,123,.2);border-radius:16px;text-align:center;cursor:pointer">
+        <div style="font-size:34px">🔧</div>
+        <div style="font-size:15px;font-weight:700;color:var(--teal);margin-top:8px">فني</div>
+        <div style="font-size:10px;color:rgba(0,137,123,.7);margin-top:3px">انضم كمقدم خدمة</div>
+      </div>
+    </div>
+    <div class="lt" style="margin-top:18px">English ↔ العربية</div>
+  </div>
+</div>
+
+<!-- CLIENT REGISTRATION -->
+<div class="s" id="s-creg">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('login')">→</div><h2>تسجيل عميل جديد</h2></div>
+  <div style="text-align:center;padding:8px 0 16px">
+    <div style="width:64px;height:64px;background:var(--blue-l);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:32px">👤</div>
+    <div style="font-size:13px;color:#888;margin-top:8px">أنشئ حسابك واحجز أول خدمة</div>
+  </div>
+  <div class="frm-field"><label>الاسم بالكامل</label><input class="frm-input" value="أحمد محمد" readonly></div>
+  <div class="frm-field"><label>رقم الموبايل</label><input class="frm-input" value="٠١٠١٢٣٤٥٦٧٨" readonly><div style="font-size:10px;color:#999;margin-top:4px">سيتم إرسال كود تأكيد</div></div>
+  <div class="frm-field"><label>كلمة المرور</label><input class="frm-input" type="password" value="••••••••" readonly></div>
+  <div style="margin:0 20px 6px;display:flex;align-items:center;gap:8px"><div style="flex:1;height:5px;background:#4caf50;border-radius:3px"></div><span style="font-size:11px;font-weight:600;color:#4caf50">قوية</span></div>
+  <div class="frm-field"><label>تأكيد كلمة المرور</label><input class="frm-input" type="password" value="••••••••" readonly></div>
+  <div class="chk-row" style="margin-top:6px"><div class="chk-box">✓</div> أوافق على شروط الاستخدام وسياسة الخصوصية</div>
+  <div style="padding:16px 20px"><button class="btn1" onclick="go('otp')">إنشاء حساب</button></div>
+  <div style="text-align:center;font-size:12px;color:#888">لديك حساب بالفعل؟ <span style="color:var(--blue);font-weight:600;cursor:pointer" onclick="go('login')">تسجيل الدخول</span></div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- OTP VERIFICATION -->
+<div class="s" id="s-otp">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('creg')">→</div><h2>تأكيد رقم الموبايل</h2></div>
+  <div style="text-align:center;padding:32px 24px">
+    <div style="width:72px;height:72px;background:var(--blue-l);border-radius:18px;display:inline-flex;align-items:center;justify-content:center;font-size:36px">📱</div>
+    <h3 style="font-size:19px;font-weight:700;margin-top:16px;color:#1a1a2e">أدخل كود التأكيد</h3>
+    <p style="font-size:13px;color:#888;margin-top:6px;line-height:1.6">تم إرسال كود مكون من ٦ أرقام إلى<br><strong style="color:var(--blue)">٠١٠١٢٣٤٥٦٧٨</strong></p>
+  </div>
+  <div style="display:flex;justify-content:center;gap:8px;direction:ltr;padding:0 20px">
+    <div style="width:44px;height:54px;border:2px solid var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--blue)">5</div>
+    <div style="width:44px;height:54px;border:2px solid var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--blue)">8</div>
+    <div style="width:44px;height:54px;border:2px solid var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--blue)">3</div>
+    <div style="width:44px;height:54px;border:2px solid var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--blue)">9</div>
+    <div style="width:44px;height:54px;border:2px solid #e0e4e8;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#ccc">_</div>
+    <div style="width:44px;height:54px;border:2px solid #e0e4e8;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#ccc">_</div>
+  </div>
+  <div style="text-align:center;margin-top:20px;font-size:12px;color:#999">إعادة الإرسال بعد <strong>00:45</strong></div>
+  <div style="text-align:center;margin-top:8px;font-size:12px;color:#ccc">لم يصلك الكود؟ <span style="color:#ccc">إعادة الإرسال</span></div>
+  <div style="padding:32px 20px"><button class="btn1" onclick="go('home')">تأكيد ✓</button></div>
+</div>
+
+<!-- HOME -->
+<div class="s" id="s-home">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="hg">صباح الخير 👋<strong>أحمد</strong></div>
+  <div class="srch">ابحث عن خدمة... 🔍</div>
+  <div class="emb" onclick="go('details')">
+    <div class="ei">⚡</div>
+    <div><h4>خدمة طوارئ</h4><p>حجز أولوية خلال ساعة</p></div>
+  </div>
+  <div class="stit">التصنيفات</div>
+  <div class="cg">
+    <div class="ci" onclick="go('details')"><div class="cci" style="background:#fff8e1;color:#f57f17">⚡</div><div class="cl">كهرباء</div></div>
+    <div class="ci"><div class="cci" style="background:#e3f2fd;color:#1565C0">🔧</div><div class="cl">سباكة</div></div>
+    <div class="ci"><div class="cci" style="background:#fff3e0;color:#e65100">🔌</div><div class="cl">أجهزة منزلية</div></div>
+    <div class="ci"><div class="cci" style="background:#e0f7fa;color:#0097a7">❄️</div><div class="cl">تكييف</div></div>
+    <div class="ci"><div class="cci" style="background:#f3e5f5;color:#7b1fa2">🎨</div><div class="cl">تشطيبات</div></div>
+    <div class="ci"><div class="cci" style="background:#efebe9;color:#5d4037">🪚</div><div class="cl">نجارة وألوميتال</div></div>
+    <div class="ci"><div class="cci" style="background:#eceff1;color:#37474f">📷</div><div class="cl">أنظمة أمان</div></div>
+    <div class="ci"><div class="cci" style="background:#fce4ec;color:#c62828">🐛</div><div class="cl">مكافحة حشرات</div></div>
+  </div>
+  <div class="stit">الخدمات الشائعة</div>
+  <div class="si" onclick="go('details')">
+    <div class="sii" style="background:#e3f2fd;color:#1565C0">🔧</div>
+    <div class="sin"><h4>سباكة عامة</h4><p>إصلاح المواسير والحنفيات وتسليك المجاري</p><div class="rt">⭐ ٤.٧ (١٤٢ تقييم)</div></div>
+    <div class="sp">٢٠٠<small>ج.م</small></div>
+  </div>
+  <div class="si">
+    <div class="sii" style="background:#fff8e1;color:#f57f17">⚡</div>
+    <div class="sin"><h4>كهرباء عامة</h4><p>أسلاك ومفاتيح وبرايز وقواطع كهربائية</p><div class="rt">⭐ ٤.٨ (٩٨ تقييم)</div></div>
+    <div class="sp">٢٠٠<small>ج.م</small></div>
+  </div>
+  <div class="si">
+    <div class="sii" style="background:#e0f7fa;color:#0097a7">❄️</div>
+    <div class="sin"><h4>صيانة التكييف</h4><p>تنظيف وشحن فريون وتغيير فلتر</p><div class="rt">⭐ ٤.٧ (٧٨ تقييم)</div></div>
+    <div class="sp">٣٥٠<small>ج.م</small></div>
+  </div>
+  <div class="si">
+    <div class="sii" style="background:#fff3e0;color:#e65100">🔌</div>
+    <div class="sin"><h4>غسالة</h4><p>تشخيص وإصلاح أعطال الغسالة</p><div class="rt">⭐ ٤.٦ (٦٤ تقييم)</div></div>
+    <div class="sp">٣٠٠<small>ج.م</small></div>
+  </div>
+  <div style="height:80px"></div>
+  <div class="bn">
+    <div class="ni on"><div class="ic">🏠</div>الرئيسية</div>
+    <div class="ni" onclick="go('tracking')"><div class="ic">📋</div>طلباتي</div>
+    <div class="ni" onclick="go('cart')"><div class="ic">🛒</div>السلة<div class="bd">٢</div></div>
+    <div class="ni" onclick="go('profile')"><div class="ic">👤</div>حسابي</div>
+  </div>
+</div>
+
+<!-- DETAILS -->
+<div class="s" id="s-details">
+  <div class="dh pl">
+    <div style="position:absolute;top:0;left:0;right:0;padding:48px 20px 0;display:flex;align-items:center;direction:rtl">
+      <div class="bk" onclick="go('home')">→</div>
+    </div>
+    <div style="padding-top:40px"><div class="di">🔧</div><h2>سباكة عامة</h2><p>إصلاح المواسير والحنفيات وتسليك المجاري</p></div>
+  </div>
+  <div class="pc"><div class="pr">٢٠٠ <small>ج.م</small></div><div class="wr">🛡️ ضمان ٣٠ يوم</div></div>
+  <div class="stit" style="margin-top:4px">ما يشمله</div>
+  <div class="il">
+    <div class="it"><span class="ck">✓</span> فحص وتشخيص المشكلة</div>
+    <div class="it"><span class="ck">✓</span> إصلاح أو تبديل المواسير</div>
+    <div class="it"><span class="ck">✓</span> اختبار التسريب</div>
+    <div class="it"><span class="ck">✓</span> التنظيف بعد الانتهاء</div>
+    <div class="it"><span class="ck">✓</span> ضمان على الخدمة ٣٠ يوم</div>
+  </div>
+  <div class="stit">التقييمات</div>
+  <div class="crd" style="direction:rtl">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+      <div style="width:32px;height:32px;background:#e3f2fd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue)">ن</div>
+      <div><div style="font-size:12px;font-weight:600">نور أحمد</div><div style="font-size:11px;color:#f59e0b">⭐⭐⭐⭐⭐</div></div>
+    </div>
+    <p style="font-size:12px;color:#666;line-height:1.6">خدمة ممتازة! الفني وصل في الميعاد وصلح الماسورة بسرعة. أنصح بيه جداً.</p>
+  </div>
+  <div style="height:70px"></div>
+  <div class="acb"><button class="btn1" onclick="go('cart')">🛒 أضف للسلة — ٢٠٠ ج.م</button></div>
+</div>
+
+<!-- CART -->
+<div class="s" id="s-cart">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><h2>السلة</h2></div>
+  <div style="padding-top:8px">
+    <div class="cti"><div class="cii" style="background:#e3f2fd;color:#1565C0">🔧</div><div class="cif"><h4>سباكة عامة</h4><p>٢٠٠ ج.م</p></div><div class="cq"><button>+</button><span>١</span><button>−</button></div></div>
+    <div class="cti"><div class="cii" style="background:#fff8e1;color:#f57f17">⚡</div><div class="cif"><h4>كهرباء عامة</h4><p>٢٠٠ ج.م</p></div><div class="cq"><button>+</button><span>١</span><button>−</button></div></div>
+  </div>
+  <div style="margin:14px 20px;padding:12px 14px;background:#fffbeb;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:12px;direction:rtl">⭐ <span>لديك <strong>٢,٤٥٠ نقطة</strong> — وفّر حتى ٢٤ ج.م</span></div>
+  <div style="height:160px"></div>
+  <div class="ctb"><div class="tl">الإجمالي<strong>٤٠٠ ج.م</strong></div><button class="ckb" onclick="go('booking')">← متابعة</button></div>
+  <div class="bn">
+    <div class="ni" onclick="go('home')"><div class="ic">🏠</div>الرئيسية</div>
+    <div class="ni"><div class="ic">📋</div>طلباتي</div>
+    <div class="ni on"><div class="ic">🛒</div>السلة</div>
+    <div class="ni" onclick="go('profile')"><div class="ic">👤</div>حسابي</div>
+  </div>
+</div>
+
+<!-- BOOKING -->
+<div class="s" id="s-booking">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('cart')">→</div><h2>تفاصيل الحجز</h2></div>
+  <div style="padding:0 20px">
+    <div class="stp">
+      <div class="sti"><div class="sd dn">✓</div><div class="sln dn"></div></div>
+      <div class="sc"><h4>اختر التاريخ</h4><p>السبت ٢٦ يوليو ٢٠٢٦</p>
+        <div class="cm"><div class="cmh"><span>◀</span><span>يوليو ٢٠٢٦</span><span>▶</span></div>
+        <div class="cmg">
+          <div class="dn">أحد</div><div class="dn">إثن</div><div class="dn">ثلا</div><div class="dn">أرب</div><div class="dn">خمي</div><div class="dn">جمع</div><div class="dn">سبت</div>
+          <div class="d"></div><div class="d"></div><div class="d"></div><div class="d">١</div><div class="d">٢</div><div class="d">٣</div><div class="d">٤</div>
+          <div class="d">٥</div><div class="d">٦</div><div class="d">٧</div><div class="d">٨</div><div class="d">٩</div><div class="d">١٠</div><div class="d">١١</div>
+          <div class="d">١٢</div><div class="d">١٣</div><div class="d">١٤</div><div class="d">١٥</div><div class="d">١٦</div><div class="d">١٧</div><div class="d">١٨</div>
+          <div class="d">١٩</div><div class="d">٢٠</div><div class="d">٢١</div><div class="d">٢٢</div><div class="d">٢٣</div><div class="d">٢٤</div><div class="d td">٢٥</div>
+          <div class="d sel">٢٦</div><div class="d">٢٧</div><div class="d">٢٨</div><div class="d">٢٩</div><div class="d">٣٠</div><div class="d">٣١</div><div class="d"></div>
+        </div></div>
+      </div>
+    </div>
+    <div class="stp">
+      <div class="sti"><div class="sd ac">٢</div><div class="sln"></div></div>
+      <div class="sc"><h4>اختر الوقت</h4>
+        <div class="ts">
+          <div class="tsi"><span class="ti">☀️</span> صباحي (٩ص–١٢ظ)</div>
+          <div class="tsi sel"><span class="ti">🌤️</span> ظهري (١٢ظ–٥م)</div>
+          <div class="tsi"><span class="ti">🌙</span> مسائي (٥م–٩م)</div>
+        </div>
+      </div>
+    </div>
+    <div class="stp"><div class="sti"><div class="sd">٣</div></div><div class="sc"><h4>العنوان</h4><p style="color:#aaa">أدخل عنوانك</p></div></div>
+  </div>
+  <div style="padding:14px 20px"><button class="btn1" onclick="go('payment')">← التالي</button></div>
+</div>
+
+<!-- PAYMENT -->
+<div class="s" id="s-payment">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('booking')">→</div><h2>الدفع</h2></div>
+  <div class="smc">
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px">ملخص الطلب</div>
+    <div class="sr"><span>سباكة عامة × ١</span><span>٢٠٠ ج.م</span></div>
+    <div class="sr"><span>كهرباء عامة × ١</span><span>٢٠٠ ج.م</span></div>
+    <div class="sr" style="border-top:1px solid #f0f0f0;padding-top:8px"><span>المجموع الفرعي</span><span>٤٠٠ ج.م</span></div>
+    <div class="sr dsc"><span>🎁 خصم النقاط</span><span>−٢٤ ج.م</span></div>
+    <div class="sr tot"><span>الإجمالي</span><span class="vl">٣٧٦ ج.م</span></div>
+  </div>
+  <div class="lb"><div class="st">⭐</div><div style="flex:1"><div style="font-weight:600">استخدم ٢,٤٠٠ نقطة</div><div style="font-size:11px;color:#92400e">وفّر ٢٤ ج.م</div></div><div class="tg"></div></div>
+  <div style="padding:0 20px 8px;font-size:14px;font-weight:700;direction:rtl">طريقة الدفع</div>
+  <div class="po sel"><div class="pi">💵</div><div><div style="font-weight:600">كاش</div><div style="font-size:11px;color:#999">الدفع عند الوصول</div></div><div class="pc2">✓</div></div>
+  <div class="po"><div class="pi">💳</div><div><div style="font-weight:600">بطاقة</div><div style="font-size:11px;color:#999">الدفع عبر Stripe</div></div></div>
+  <div style="padding:18px 20px"><button class="btn1" onclick="go('confirm')">تأكيد الحجز · ٣٧٦ ج.م</button></div>
+</div>
+
+<!-- CONFIRMATION -->
+<div class="s" id="s-confirm">
+  <div class="ccn">✓</div>
+  <h2>تم تأكيد الحجز!</h2>
+  <div class="bid">رقم الحجز #HE-1042</div>
+  <div class="qrc">▣</div>
+  <p style="color:#888;font-size:13px;max-width:240px;line-height:1.6">تم تأكيد حجزك بنجاح. اعرض الكود للفني عند وصوله.</p>
+  <div class="wbg">🛡️ ضمان ٣٠ يوم مشمول</div>
+  <div style="margin-top:24px"><button class="btn1" style="width:auto;padding:12px 32px;font-size:13px" onclick="go('tech')">تتبع الفني ←</button></div>
+</div>
+
+<!-- ★ TECHNICIAN TRACKING (UBER-STYLE) ★ -->
+<div class="s" id="s-tech">
+  <div class="sb" style="position:absolute;top:0;left:0;right:0;z-index:10"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="map-area">
+    <div class="map-grid"></div>
+    <!-- Roads -->
+    <div class="map-road-h" style="top:100px;left:20px;width:320px"></div>
+    <div class="map-road-h" style="top:180px;left:40px;width:280px"></div>
+    <div class="map-road-v" style="right:120px;top:60px;height:200px"></div>
+    <div class="map-road-v" style="right:220px;top:40px;height:220px"></div>
+    <!-- Route -->
+    <svg style="position:absolute;inset:0;z-index:3" viewBox="0 0 375 280">
+      <path d="M 260 90 Q 260 140 200 140 Q 140 140 140 200" stroke="#1565C0" stroke-width="3" stroke-dasharray="8 6" fill="none" opacity=".6"/>
+    </svg>
+    <!-- Tech dot -->
+    <div class="tech-dot" style="top:78px;right:248px"></div>
+    <!-- User pin -->
+    <div class="user-pin" style="bottom:64px;right:126px">📍</div>
+    <!-- ETA -->
+    <div class="eta-card">
+      <div class="eta-t">الوقت المتوقع للوصول</div>
+      <div class="eta-v">١٥ <small>دقيقة</small></div>
+      <div class="eta-bar"><div class="fill"></div></div>
+    </div>
+  </div>
+  <!-- Tech Card -->
+  <div class="tech-card">
+    <div class="tc-top">
+      <div class="tc-av">أ<div class="onl"></div></div>
+      <div class="tc-info">
+        <h3>أحمد حسن</h3>
+        <div class="tc-rt">⭐ ٤.٨ (١٤٢ مهمة)</div>
+        <div class="tc-sp">سباكة</div>
+      </div>
+    </div>
+    <div class="tc-vehicle"><span class="tv-icon">🚗</span> سيارة بيضاء — أ ب ج ١٢٣٤</div>
+    <div class="tc-actions">
+      <button class="tc-call">📞 اتصال</button>
+      <button class="tc-chat" onclick="go('tchat')">💬 محادثة</button>
+    </div>
+  </div>
+  <div class="tc-cancel" onclick="go('home')">إلغاء الطلب</div>
+</div>
+
+<!-- ★ CHAT WITH TECHNICIAN ★ -->
+<div class="s" id="s-tchat">
+  <div class="ch-bar">
+    <div class="bk" onclick="go('tech')" style="color:#fff">→</div>
+    <div class="ch-av">أ<div class="onl2"></div></div>
+    <div class="ch-nm"><h3>أحمد حسن</h3><p>متصل الآن</p></div>
+    <div style="font-size:20px;cursor:pointer">📞</div>
+  </div>
+  <div class="msgs">
+    <div class="mg tch">السلام عليكم، أنا في الطريق إليك 🚗<div class="mt">١٠:٣٠ ص</div></div>
+    <div class="mg usr">أهلاً، الشقة في الدور الثالث<div class="mt">١٠:٣١ ص</div></div>
+    <div class="mg tch">تمام، هوصل في حوالي ١٥ دقيقة إن شاء الله<div class="mt">١٠:٣٢ ص</div></div>
+    <div class="mg usr">ممتاز، هستناك 👍<div class="mt">١٠:٣٣ ص</div></div>
+    <div class="mg tch">وصلت تحت العمارة 🏠<div class="mt">١٠:٤٥ ص</div></div>
+  </div>
+  <div class="qr-chips">
+    <span>أنا في البيت ✓</span>
+    <span>اتصل بيا 📞</span>
+    <span>الباب مفتوح 🚪</span>
+    <span>استنى دقيقة ⏳</span>
+  </div>
+  <div class="chin"><input class="chinp" placeholder="اكتب رسالة..." readonly><button class="sndb">➤</button></div>
+</div>
+
+<!-- ORDER TRACKING -->
+<div class="s" id="s-tracking">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('home')">→</div><h2>طلب #HE-1042</h2></div>
+  <div style="padding:8px 20px">
+    <div class="tls">
+      <div class="tli"><div class="tld dn">✓</div><div class="tll dn"></div></div>
+      <div class="tlc"><h4>قيد الانتظار</h4><p>تم تقديم الطلب بنجاح</p></div>
+    </div>
+    <div class="tls">
+      <div class="tli"><div class="tld dn">✓</div><div class="tll dn"></div></div>
+      <div class="tlc"><h4>تم التأكيد</h4><p>تم التحقق من الدفع</p></div>
+    </div>
+    <div class="tls">
+      <div class="tli"><div class="tld dn">✓</div><div class="tll dn"></div></div>
+      <div class="tlc"><h4>تم تعيين فني</h4><p>أحمد حسن</p></div>
+    </div>
+    <div class="tls">
+      <div class="tli"><div class="tld cr">🔧</div><div class="tll"></div></div>
+      <div class="tlc"><h4>جاري التنفيذ</h4><p class="crl">الحالة الحالية</p></div>
+    </div>
+    <div class="tls">
+      <div class="tli"><div class="tld">✓</div></div>
+      <div class="tlc"><h4>مكتمل</h4><p>بانتظار الانتهاء</p></div>
+    </div>
+  </div>
+  <div class="qrc2"><div style="font-size:13px;font-weight:700;margin-bottom:6px">كود تحقق الفني</div><div class="qrp">▣</div><p>اعرض الكود للفني عند وصوله</p></div>
+  <div style="margin:0 20px;padding:12px 14px;background:#e8f5e9;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:12px;color:#2e7d32;direction:rtl">🛡️ <span><strong>ضمان ٣٠ يوم</strong> — يشمل جميع الخدمات</span></div>
+  <div style="padding:14px 20px;margin-top:8px"><button class="btn1" style="background:linear-gradient(135deg,#2e7d32,#1b5e20)" onclick="go('rating')">⭐ تقييم الخدمة</button></div>
+</div>
+
+<!-- RATING -->
+<div class="s" id="s-rating">
+  <div class="rat-top">
+    <div class="rat-av">أ</div>
+    <h3>أحمد حسن</h3>
+    <p>كيف كانت الخدمة؟</p>
+  </div>
+  <div class="stars">
+    <span class="filled">⭐</span><span class="filled">⭐</span><span class="filled">⭐</span><span class="filled">⭐</span><span class="empty">⭐</span>
+  </div>
+  <div class="cat-rat">
+    <div class="cr-item"><span>الالتزام بالموعد</span><div class="cr-stars">⭐⭐⭐⭐⭐</div></div>
+    <div class="cr-item"><span>جودة العمل</span><div class="cr-stars">⭐⭐⭐⭐</div></div>
+    <div class="cr-item"><span>النظافة</span><div class="cr-stars">⭐⭐⭐⭐⭐</div></div>
+    <div class="cr-item"><span>التعامل</span><div class="cr-stars">⭐⭐⭐⭐</div></div>
+  </div>
+  <textarea class="rat-ta" placeholder="اكتب تعليقك..." readonly></textarea>
+  <div style="padding:0 24px"><button class="btn1" onclick="go('home')">إرسال التقييم</button></div>
+  <div class="skip">تخطي</div>
+</div>
+
+<!-- PROFILE -->
+<div class="s" id="s-profile">
+  <div class="ph"><div class="pav">أ</div><h3>أحمد حسن</h3><p>ahmed@example.com</p></div>
+  <div class="ptc"><div class="star">⭐</div><div><div class="ptv">٢,٤٥٠</div><div class="ptl">نقطة = ٢٤ ج.م خصم</div></div></div>
+  <div style="background:#fff;border-radius:16px;margin:0 20px;overflow:hidden">
+    <div class="sti2"><div class="si2">🌙</div><div class="sl2">الوضع الداكن</div><div class="tgsm off"></div></div>
+    <div class="sti2"><div class="si2">🌐</div><div class="sl2">اللغة</div><div style="font-size:12px;color:var(--blue);font-weight:600">EN | AR</div></div>
+    <div class="sti2"><div class="si2">👤</div><div class="sl2">تعديل الملف الشخصي</div><div class="sa2">‹</div></div>
+    <div class="sti2"><div class="si2">📍</div><div class="sl2">العنوان</div><div class="sa2">‹</div></div>
+    <div class="sti2" onclick="go('support')"><div class="si2">💬</div><div class="sl2">الدعم الفني</div><div class="sa2">‹</div></div>
+    <div class="sti2" style="border:none"><div class="si2">ℹ️</div><div class="sl2">عن التطبيق</div><div class="sa2">‹</div></div>
+  </div>
+  <button class="lob">🚪 تسجيل الخروج</button>
+  <div class="bn">
+    <div class="ni" onclick="go('home')"><div class="ic">🏠</div>الرئيسية</div>
+    <div class="ni" onclick="go('tracking')"><div class="ic">📋</div>طلباتي</div>
+    <div class="ni" onclick="go('cart')"><div class="ic">🛒</div>السلة</div>
+    <div class="ni on"><div class="ic">👤</div>حسابي</div>
+  </div>
+</div>
+
+<!-- SUPPORT -->
+<div class="s" id="s-support">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab pr"><div class="bk" onclick="go('profile')" style="color:#fff">→</div><h2>الدعم الفني</h2><div style="font-size:20px;cursor:pointer">📞</div></div>
+  <div class="qa-row">
+    <div>📞<br>اتصال</div>
+    <div>❓<br>أسئلة شائعة</div>
+    <div>🛡️<br>ضمان</div>
+  </div>
+  <div class="msgs">
+    <div class="mg tch">أهلاً بيك في دعم هوم إيز! 👋 إزاي أقدر أساعدك؟<div class="mt">١١:٠٠ ص</div></div>
+    <div class="mg usr">عايز أسأل عن حالة الطلب بتاعي #HE-1042<div class="mt">١١:٠١ ص</div></div>
+    <div class="mg tch">طلبك لسباكة عامة + كهرباء عامة متأكد ومحجوز لبكرة. الفني أحمد حسن هيوصلك الساعة ١٢ الظهر ✅<div class="mt">١١:٠٢ ص</div></div>
+  </div>
+  <div class="chin"><input class="chinp" placeholder="اكتب رسالة..." readonly><button class="sndb">➤</button></div>
+</div>
+
+<!-- ★ TECH REGISTRATION STEP 1 ★ -->
+<div class="s" id="s-treg1">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('home')">→</div><h2>تسجيل كفني</h2></div>
+  <div class="step-bar">
+    <div style="text-align:center"><div class="sb-dot ac">١</div><div class="sb-label ac">البيانات</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٢</div><div class="sb-label">التخصص</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٣</div><div class="sb-label">المستندات</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٤</div><div class="sb-label">المراجعة</div></div>
+  </div>
+  <div class="frm-title">البيانات الشخصية</div>
+  <div class="frm-sub">أدخل بياناتك الشخصية بدقة</div>
+  <div class="frm-field"><label>الاسم بالكامل</label><input class="frm-input" value="محمد أحمد حسن" readonly></div>
+  <div class="frm-field"><label>السن</label><input class="frm-input" value="٣٢" readonly></div>
+  <div class="frm-field"><label>رقم الموبايل</label><input class="frm-input" value="٠١٠١٢٣٤٥٦٧٨" readonly style="direction:ltr;text-align:right"></div>
+  <div class="frm-field"><label>العنوان بالتفصيل</label><input class="frm-input" value="شارع فيصل — الجيزة — بجوار مسجد الرحمة" readonly></div>
+  <div class="frm-field"><label>المحافظة</label><select class="frm-select" disabled><option>الجيزة</option></select></div>
+  <div class="frm-nav"><button class="fn-next" onclick="go('treg2')">التالي ←</button></div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ★ TECH REGISTRATION STEP 2 ★ -->
+<div class="s" id="s-treg2">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('treg1')">→</div><h2>تسجيل كفني</h2></div>
+  <div class="step-bar">
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">البيانات</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot ac">٢</div><div class="sb-label ac">التخصص</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٣</div><div class="sb-label">المستندات</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٤</div><div class="sb-label">المراجعة</div></div>
+  </div>
+  <div class="frm-title">التخصص والخبرة</div>
+  <div class="frm-sub">اختر تخصصاتك وأخبرنا عن خبرتك</div>
+  <div style="padding:0 20px;font-size:12px;font-weight:600;color:#555;margin-bottom:8px">التخصصات (اختر واحد أو أكثر)</div>
+  <div class="spec-chips">
+    <div class="spec-chip sel">⚡ كهرباء</div>
+    <div class="spec-chip sel">🔧 سباكة</div>
+    <div class="spec-chip">🔌 أجهزة منزلية</div>
+    <div class="spec-chip">❄️ تكييف</div>
+    <div class="spec-chip">🎨 تشطيبات</div>
+    <div class="spec-chip">🪚 نجارة وألوميتال</div>
+    <div class="spec-chip">📷 أنظمة أمان</div>
+    <div class="spec-chip">🐛 مكافحة حشرات</div>
+  </div>
+  <div class="frm-field"><label>سنوات الخبرة</label><input class="frm-input" value="٨ سنوات" readonly></div>
+  <div style="padding:0 20px;font-size:12px;font-weight:600;color:#555;margin-bottom:6px">المؤهل الدراسي</div>
+  <div class="edu-opt"><div class="edu-radio"></div> ابتدائي</div>
+  <div class="edu-opt"><div class="edu-radio"></div> إعدادي</div>
+  <div class="edu-opt"><div class="edu-radio sel"></div> ثانوي / دبلوم</div>
+  <div class="edu-opt"><div class="edu-radio"></div> مؤهل عالي</div>
+  <div class="edu-opt"><div class="edu-radio"></div> تعليم فني / مهني</div>
+  <div class="frm-field" style="margin-top:10px"><label>نبذة عنك</label><textarea class="frm-input" rows="3" readonly style="resize:none;height:70px">فني سباكة وتكييف خبرة ٨ سنوات. متخصص في سباكة وكهرباء. شغلي نضيف والتزم بالمواعيد.</textarea></div>
+  <div class="frm-nav"><button class="fn-prev" onclick="go('treg1')">→ السابق</button><button class="fn-next" onclick="go('treg3')">التالي ←</button></div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ★ TECH REGISTRATION STEP 3 ★ -->
+<div class="s" id="s-treg3">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('treg2')">→</div><h2>تسجيل كفني</h2></div>
+  <div class="step-bar">
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">البيانات</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">التخصص</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot ac">٣</div><div class="sb-label ac">المستندات</div></div>
+    <div class="sb-line"></div>
+    <div style="text-align:center"><div class="sb-dot">٤</div><div class="sb-label">المراجعة</div></div>
+  </div>
+  <div class="frm-title">المستندات والصور</div>
+  <div class="frm-sub">ارفع الصور والمستندات المطلوبة</div>
+  <div class="upload-box"><label>صورة شخصية واضحة</label><div class="upload-area circ done"><div class="up-icon">✓</div><div class="up-txt">تم التحميل</div></div></div>
+  <div class="upload-box"><label>صورة البطاقة — وجه أمامي</label><div class="upload-area done"><div class="up-icon">✓</div><div class="up-txt">تم التحميل — id_front.jpg</div></div></div>
+  <div class="upload-box"><label>صورة البطاقة — وجه خلفي</label><div class="upload-area done"><div class="up-icon">✓</div><div class="up-txt">تم التحميل — id_back.jpg</div></div></div>
+  <div class="upload-box"><label>صورة الفيش والتشبيه</label><div class="upload-area"><div class="up-icon">📄</div><div class="up-txt">اضغط للتحميل</div></div></div>
+  <div style="margin:6px 20px;padding:10px 14px;background:#fffbeb;border-radius:10px;display:flex;align-items:center;gap:8px;font-size:11px;color:#92400e;direction:rtl">⚠️ الحد الأقصى لحجم كل صورة ٥ ميجا. تأكد من وضوح الصور.</div>
+  <div class="frm-nav"><button class="fn-prev" onclick="go('treg2')">→ السابق</button><button class="fn-next" onclick="go('treg4')">التالي ←</button></div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ★ TECH REGISTRATION STEP 4 ★ -->
+<div class="s" id="s-treg4">
+  <div class="sb"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="ab"><div class="bk" onclick="go('treg3')">→</div><h2>تسجيل كفني</h2></div>
+  <div class="step-bar">
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">البيانات</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">التخصص</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot dn">✓</div><div class="sb-label">المستندات</div></div>
+    <div class="sb-line dn"></div>
+    <div style="text-align:center"><div class="sb-dot ac">٤</div><div class="sb-label ac">المراجعة</div></div>
+  </div>
+  <div class="frm-title">المراجعة والإرسال</div>
+  <div class="frm-sub">راجع بياناتك قبل الإرسال</div>
+  <div class="review-card">
+    <div style="text-align:center;margin-bottom:10px"><div style="width:60px;height:60px;border-radius:50%;background:var(--blue-l);display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:var(--blue)">م</div></div>
+    <div class="rv-row"><div class="rv-l">الاسم</div><div class="rv-v">محمد أحمد حسن</div></div>
+    <div class="rv-row"><div class="rv-l">السن</div><div class="rv-v">٣٢ سنة</div></div>
+    <div class="rv-row"><div class="rv-l">الموبايل</div><div class="rv-v">٠١٠١٢٣٤٥٦٧٨</div></div>
+    <div class="rv-row"><div class="rv-l">العنوان</div><div class="rv-v">شارع فيصل — الجيزة</div></div>
+    <div class="rv-row"><div class="rv-l">المحافظة</div><div class="rv-v">الجيزة</div></div>
+    <div class="rv-row"><div class="rv-l">التخصصات</div><div class="rv-v">كهرباء، سباكة</div></div>
+    <div class="rv-row"><div class="rv-l">الخبرة</div><div class="rv-v">٨ سنوات</div></div>
+    <div class="rv-row"><div class="rv-l">المؤهل</div><div class="rv-v">ثانوي / دبلوم</div></div>
+    <div class="rv-photos">
+      <div class="rv-ph done">✓ البطاقة أمام</div>
+      <div class="rv-ph done">✓ البطاقة خلف</div>
+      <div class="rv-ph done">✓ الفيش</div>
+    </div>
+  </div>
+  <div class="chk-row"><div class="chk-box">✓</div> أوافق على شروط الاستخدام وسياسة الخصوصية</div>
+  <div class="chk-row"><div class="chk-box">✓</div> أقر بأن جميع البيانات المقدمة صحيحة وأتحمل المسؤولية</div>
+  <div style="margin:10px 20px;padding:10px 14px;background:var(--blue-l);border-radius:10px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--blue);direction:rtl">🕐 سيتم مراجعة طلبك خلال ٢٤-٤٨ ساعة وسنتواصل معك.</div>
+  <div class="frm-nav"><button class="fn-prev" onclick="go('treg3')">→ السابق</button><button class="fn-next" onclick="go('tsub')" style="background:var(--teal)">إرسال طلب التسجيل ✓</button></div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ★ APPLICATION SUBMITTED ★ -->
+<div class="s sub-screen" id="s-tsub">
+  <div class="sub-icon">⏳</div>
+  <h2 style="font-size:21px;font-weight:800;color:#1a1a2e">تم إرسال طلبك بنجاح! 🎉</h2>
+  <p style="color:#888;font-size:14px;margin-top:10px;max-width:260px;line-height:1.7">جاري مراجعة بياناتك<br>سنتواصل معك خلال ٢٤-٤٨ ساعة</p>
+  <div class="sub-status">⏳ حالة الطلب: قيد المراجعة</div>
+  <div style="margin-top:24px"><button class="fn-prev" style="padding:12px 28px;border-radius:12px" onclick="go('home')">💬 تواصل معنا</button></div>
+  <div style="margin-top:12px"><button class="fn-next" style="width:auto;padding:12px 28px" onclick="go('tdash')">🎉 معاينة لوحة الفني ←</button></div>
+</div>
+
+<!-- ★ TECHNICIAN DASHBOARD ★ -->
+<div class="s" id="s-tdash">
+  <div class="sb" style="position:absolute;z-index:10"><span>📶 🔋</span><span>٩:٤١</span></div>
+  <div class="td-header">
+    <div style="height:28px"></div>
+    <div class="td-top">
+      <div class="td-av2">م</div>
+      <div style="flex:1"><h3>أهلاً، محمد 👋</h3><p>سباكة · تكييف</p></div>
+      <div class="td-toggle"><span>متاح</span><div class="tg2"></div></div>
+    </div>
+  </div>
+  <div class="td-stats">
+    <div class="td-stat"><div class="ts-val" style="color:var(--orange)">٣</div><div class="ts-lbl">طلبات جديدة</div></div>
+    <div class="td-stat"><div class="ts-val" style="color:var(--blue)">١</div><div class="ts-lbl">قيد التنفيذ</div></div>
+    <div class="td-stat"><div class="ts-val" style="color:var(--teal)">١٤٢</div><div class="ts-lbl">مكتملة</div></div>
+    <div class="td-stat"><div class="ts-val" style="color:#7b1fa2">١٢,٥٠٠</div><div class="ts-lbl">الأرباح ج.م</div></div>
+  </div>
+  <!-- Tabs -->
+  <div style="display:flex;border-bottom:2px solid #eee;margin:0 20px">
+    <div style="flex:1;text-align:center;padding:10px 0;border-bottom:2px solid var(--blue);color:var(--blue);font-size:12px;font-weight:700;margin-bottom:-2px">طلبات جديدة <span style="background:var(--red);color:#fff;font-size:9px;padding:2px 6px;border-radius:8px;margin-right:4px">٣</span></div>
+    <div style="flex:1;text-align:center;padding:10px 0;font-size:12px;color:#999">مهامي</div>
+    <div style="flex:1;text-align:center;padding:10px 0;font-size:12px;color:#999">السجل</div>
+  </div>
+  <div style="padding:4px 20px 4px;margin-top:6px;font-size:10px;color:#999;direction:rtl">⚡ الطلبات معروضة على حسب تخصصاتك: <strong style="color:#f57f17">كهرباء</strong> و <strong style="color:var(--blue)">سباكة</strong></div>
+  <div class="td-job">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <h4>🔧 سباكة عامة</h4>
+        <div style="margin:4px 0"><span style="display:inline-block;padding:2px 8px;background:rgba(21,101,192,.1);color:var(--blue);border-radius:5px;font-size:9px;font-weight:600">سباكة</span></div>
+        <p>📍 المعادي — شارع ٩</p>
+        <p>📅 اليوم، ٢:٠٠ م</p>
+      </div>
+      <div style="text-align:left"><div style="font-size:20px;font-weight:800;color:var(--blue)">٢٠٠</div><div style="font-size:9px;color:#999">ج.م</div></div>
+    </div>
+    <div class="td-actions"><button class="td-accept">✅ قبول</button><button class="td-reject">❌ تخطي</button></div>
+  </div>
+  <div class="td-job">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <h4>⚡ كهرباء عامة</h4>
+        <div style="margin:4px 0"><span style="display:inline-block;padding:2px 8px;background:rgba(245,127,23,.1);color:#f57f17;border-radius:5px;font-size:9px;font-weight:600">كهرباء</span></div>
+        <p>📍 الدقي — شارع التحرير</p>
+        <p>📅 بكرة، ١٠:٠٠ ص</p>
+      </div>
+      <div style="text-align:left"><div style="font-size:20px;font-weight:800;color:var(--blue)">٢٠٠</div><div style="font-size:9px;color:#999">ج.م</div></div>
+    </div>
+    <div class="td-actions"><button class="td-accept">✅ قبول</button><button class="td-reject">❌ تخطي</button></div>
+  </div>
+  <div class="td-job">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <h4>🔧 دش</h4>
+        <div style="margin:4px 0"><span style="display:inline-block;padding:2px 8px;background:rgba(21,101,192,.1);color:var(--blue);border-radius:5px;font-size:9px;font-weight:600">سباكة</span> <span style="display:inline-block;padding:2px 8px;background:rgba(211,47,47,.08);color:var(--red);border-radius:5px;font-size:9px;font-weight:600">⚡ طوارئ</span></div>
+        <p>📍 الهرم — شارع الهرم</p>
+        <p>📅 بكرة، ٣:٠٠ م</p>
+      </div>
+      <div style="text-align:left"><div style="font-size:20px;font-weight:800;color:var(--blue)">٢٠٠</div><div style="font-size:9px;color:#999">ج.م</div></div>
+    </div>
+    <div class="td-actions"><button class="td-accept">✅ قبول</button><button class="td-reject">❌ تخطي</button></div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- INFO -->
+<div class="info" id="info">
+  <h3 id="iT">شاشة البداية</h3>
+  <p id="iD">شعار متحرك مع تأثيرات ظهور تدريجي. يتحقق من حالة تسجيل الدخول وينتقل تلقائياً للشاشة المناسبة.</p>
+  <div class="fch" id="iC"><div class="fc">انتقال تلقائي</div><div class="fc">تحريك الشعار</div><div class="fc">Firebase Auth</div></div>
+</div>
+
+<script>
+const D={
+splash:{t:'شاشة البداية',d:'شعار متحرك مع تأثيرات ظهور تدريجي. يتحقق من حالة تسجيل الدخول عبر Firebase Auth وينتقل تلقائياً.',c:['انتقال تلقائي','تحريك الشعار','Firebase Auth']},
+login:{t:'تسجيل الدخول',d:'شاشة موحدة للعملاء والفنيين. تسجيل بالموبايل وكلمة المرور أو حساب جوجل. في الأسفل كارتين للتسجيل: عميل (أزرق) أو فني (تيل) — كل واحد ليه مسار تسجيل مختلف تماماً.',c:['موبايل + باسوورد','جوجل','نسيت كلمة المرور','تسجيل عميل','تسجيل فني','تبديل اللغة']},
+creg:{t:'👤 تسجيل عميل جديد',d:'نموذج تسجيل بسيط وسريع للعملاء: الاسم، رقم الموبايل، كلمة المرور مع مؤشر القوة (ضعيفة/متوسطة/قوية)، وتأكيد كلمة المرور. موافقة على الشروط ثم إرسال كود OTP.',c:['الاسم','الموبايل','كلمة مرور','مؤشر القوة','تأكيد الباسوورد','شروط الاستخدام']},
+otp:{t:'📱 تأكيد رقم الموبايل',d:'شاشة إدخال كود التحقق المكون من ٦ أرقام المرسل للموبايل. انتقال تلقائي بين الخانات، مؤقت إعادة الإرسال، وتأكيد تلقائي عند إدخال كل الأرقام.',c:['٦ أرقام','انتقال تلقائي','مؤقت ٤٥ ثانية','إعادة إرسال','تأكيد تلقائي','Firebase Phone Auth']},
+home:{t:'الشاشة الرئيسية',d:'لوحة رئيسية مع بحث، زر حجز طوارئ، شبكة ٨ تصنيفات، وقائمة الخدمات الشائعة مع التقييمات.',c:['بحث','زر طوارئ','٨ تصنيفات','توصيات ذكية','شارة السلة']},
+details:{t:'تفاصيل الخدمة',d:'عرض تفصيلي مع لون التصنيف، بطاقة السعر مع شارة الضمان، قائمة المشمولات، وتقييمات العملاء.',c:['ألوان التصنيفات','ضمان ٣٠ يوم','التقييمات','أضف للسلة']},
+cart:{t:'السلة',d:'قائمة المنتجات مع أزرار الكمية، معاينة نقاط الولاء، وملخص الإجمالي. انتقال مباشر لتسجيل الحجز.',c:['تحكم بالكمية','نقاط الولاء','حساب الإجمالي','حذف عناصر']},
+booking:{t:'تفاصيل الحجز',d:'٣ خطوات: اختيار التاريخ من التقويم، اختيار الوقت (صباحي/ظهري/مسائي)، وإدخال العنوان.',c:['تقويم تفاعلي','٣ فترات زمنية','نموذج العنوان','وضع الطوارئ','خطوات متتابعة']},
+payment:{t:'الدفع',d:'ملخص الطلب، تبديل استخدام نقاط الولاء، واختيار طريقة الدفع. يدعم الكاش وبطاقة Stripe.',c:['كاش/بطاقة','استبدال النقاط','ملخص الطلب','Stripe','رسوم الطوارئ']},
+confirm:{t:'تأكيد الحجز',d:'تأثير نجاح مع عرض رمز QR. يعرض رقم الحجز ومعلومات الضمان والانتقال لتتبع الفني.',c:['تأثير النجاح','رمز QR','رقم الحجز','شارة الضمان']},
+tech:{t:'⭐ تتبع الفني — أوبر ستايل',d:'تجربة تتبع لحظية مثل أوبر: خريطة مع موقع الفني المتحرك، وقت الوصول المتوقع، بطاقة معلومات الفني، وأزرار الاتصال والمحادثة.',c:['خريطة حية','وقت وصول متوقع','معلومات الفني','اتصال مباشر','محادثة فورية','معلومات المركبة']},
+tchat:{t:'💬 المحادثة مع الفني',d:'محادثة فورية بين العميل والفني. تشمل ردود سريعة جاهزة ومؤشر الاتصال. يمكن للفني والعميل التواصل مباشرة.',c:['محادثة فورية','ردود سريعة','مؤشر الاتصال','Firebase Messages','اتصال مباشر']},
+tracking:{t:'تتبع الطلب',d:'تايم لاين عمودي لحالة الطلب من الانتظار للاكتمال. يعرض رمز QR للتحقق ومعلومات الضمان.',c:['تايم لاين الحالة','رمز QR','تحديثات لحظية','مطالبة بالضمان','إلغاء/تقييم']},
+rating:{t:'تقييم الخدمة',d:'تقييم شامل للفني: نجوم عامة + تقييمات فرعية (الموعد، الجودة، النظافة، التعامل) + تعليق نصي.',c:['تقييم بالنجوم','تقييمات فرعية','تعليق نصي','تخطي','إرسال للFirestore']},
+profile:{t:'حسابي',d:'بطاقة المستخدم مع نقاط الولاء. إعدادات الوضع الداكن، تبديل اللغة، تعديل الملف الشخصي، والدعم.',c:['نقاط الولاء','وضع داكن','عربي/إنجليزي','تعديل الملف','تسجيل الخروج']},
+support:{t:'الدعم الفني',d:'محادثة مباشرة مع فريق الدعم. أزرار سريعة للاتصال الهاتفي والأسئلة الشائعة ومطالبات الضمان.',c:['محادثة مباشرة','خط ساخن','أسئلة شائعة','مطالبات الضمان','Firebase Messages']},
+treg1:{t:'🔧 تسجيل فني — الخطوة ١',d:'البيانات الشخصية: الاسم الكامل، السن (١٨-٦٥)، رقم الموبايل، العنوان بالتفصيل، واختيار المحافظة من ٢٧ محافظة.',c:['الاسم','السن','الموبايل','العنوان','المحافظة','تحقق من البيانات']},
+treg2:{t:'🔧 تسجيل فني — الخطوة ٢',d:'التخصص والخبرة: اختيار تخصص أو أكثر من ٨ تصنيفات، سنوات الخبرة، المؤهل الدراسي (٥ مستويات)، ونبذة شخصية.',c:['٨ تخصصات','سنوات الخبرة','٥ مستويات تعليم','نبذة شخصية','اختيار متعدد']},
+treg3:{t:'🔧 تسجيل فني — الخطوة ٣',d:'المستندات والصور: رفع صورة شخصية واضحة، صورة البطاقة وش وضهر، وصورة الفيش والتشبيه. حد أقصى ٥ ميجا لكل صورة.',c:['صورة شخصية','بطاقة أمام','بطاقة خلف','فيش وتشبيه','كاميرا/معرض','حد ٥ ميجا']},
+treg4:{t:'🔧 مراجعة وإرسال',d:'مراجعة شاملة لكل البيانات المدخلة والصور المرفوعة. موافقة على الشروط والإقرار بصحة البيانات قبل الإرسال.',c:['ملخص البيانات','معاينة الصور','شروط الاستخدام','إقرار بالصحة','إرسال الطلب']},
+tsub:{t:'⏳ طلبك قيد المراجعة',d:'شاشة تأكيد الإرسال. يظهر حالة الطلب (قيد المراجعة) مع ملاحظة أن المراجعة تتم خلال ٢٤-٤٨ ساعة.',c:['تأكيد الإرسال','حالة الطلب','٢٤-٤٨ ساعة','تواصل مع الدعم']},
+tdash:{t:'📊 لوحة تحكم الفني',d:'لوحة التحكم بعد الموافقة مع فلترة الطلبات حسب التخصص: الفني يشوف بس الطلبات اللي تخصصه فيها. ٣ تابات: طلبات جديدة (فلترة أوتوماتيك)، مهامي (المقبولة)، السجل (المكتملة). زر تبديل متاح/غير متاح. بادج التخصص على كل طلب.',c:['فلترة حسب التخصص','طلبات جديدة','مهامي','السجل','قبول/تخطي','متاح/غير متاح','بادج التخصص','طوارئ']}
+};
+
+function go(id,btn){
+  document.querySelectorAll('.s').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-'+id).classList.add('on');
+  if(btn){
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  } else {
+    const btns=document.querySelectorAll('.nav button');
+    const keys=Object.keys(D);
+    const idx=keys.indexOf(id);
+    if(idx>=0&&btns[idx]){btns.forEach(b=>b.classList.remove('on'));btns[idx].classList.add('on');btns[idx].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}
+  }
+  const info=D[id];
+  if(info){
+    document.getElementById('iT').textContent=info.t;
+    document.getElementById('iD').textContent=info.d;
+    document.getElementById('iC').innerHTML=info.c.map(c=>'<div class="fc">'+c+'</div>').join('');
+  }
+}
+</script>
+</body>
+</html>

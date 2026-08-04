@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeEase — Interactive App Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #1565C0;
+  --blue-dark: #0d47a1;
+  --blue-light: #e3f2fd;
+  --orange: #FF6F00;
+  --orange-light: #fff3e0;
+  --teal: #00897B;
+  --teal-light: #e0f2f1;
+  --red: #D32F2F;
+  --bg: #0f1923;
+  --surface: #182633;
+  --surface-2: #1e3044;
+  --text: #e8edf2;
+  --text-dim: #7a8fa3;
+  --phone-bg: #f5f7fa;
+  --card: #ffffff;
+  --radius: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+.preview-header {
+  text-align: center;
+  padding: 48px 24px 20px;
+}
+.preview-header .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.preview-header .logo-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: #fff;
+}
+.preview-header .logo h1 {
+  font-size: 28px; font-weight: 800;
+  background: linear-gradient(135deg, var(--blue-light), #b3e5fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+.preview-header p {
+  color: var(--text-dim);
+  font-size: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== SCREEN NAV ===== */
+.screen-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, var(--bg) 60%, transparent);
+  padding: 12px 0 24px;
+}
+.screen-nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 0 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.screen-nav::-webkit-scrollbar { display: none; }
+.screen-nav button {
+  flex-shrink: 0;
+  padding: 8px 18px;
+  border: 1.5px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--text-dim);
+  border-radius: 99px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .25s;
+  white-space: nowrap;
+}
+.screen-nav button:hover {
+  border-color: var(--blue);
+  color: var(--text);
+}
+.screen-nav button.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ===== PHONE FRAME ===== */
+.phone-stage {
+  display: flex;
+  justify-content: center;
+  padding: 0 24px 60px;
+}
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: #000;
+  border-radius: 52px;
+  padding: 14px;
+  box-shadow:
+    0 0 0 2px #2a2a2a,
+    0 40px 100px rgba(0,0,0,.5),
+    0 0 120px rgba(21,101,192,.15);
+  position: relative;
+}
+.phone-notch {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 18px 18px;
+  z-index: 20;
+}
+.phone-notch::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 99px;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--phone-bg);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== SCREEN CONTENT ===== */
+.app-screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.app-screen::-webkit-scrollbar { display: none; }
+.app-screen.active { display: flex; }
+
+/* Status bar */
+.status-bar {
+  height: 48px;
+  padding: 14px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  flex-shrink: 0;
+}
+
+/* App bar */
+.app-bar {
+  padding: 8px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.app-bar.primary {
+  background: var(--blue);
+  color: #fff;
+  padding-top: 12px;
+}
+.app-bar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  flex: 1;
+}
+.app-bar .back-btn {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+}
+.app-bar.primary .back-btn { color: #fff; }
+
+/* Bottom nav */
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 8px;
+  z-index: 10;
+}
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  color: #999;
+  cursor: pointer;
+  transition: .2s;
+}
+.bottom-nav .nav-item.active { color: var(--blue); }
+.bottom-nav .nav-item .nav-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.bottom-nav .nav-item .badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background: var(--orange);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Shared components */
+.search-bar {
+  margin: 0 20px 16px;
+  background: #fff;
+  border: 1.5px solid #e8ecf0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.section-title {
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  margin: 0 20px 12px;
+  padding: 16px;
+}
+
+/* ===== SPLASH SCREEN ===== */
+#screen-splash {
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  align-items: center;
+  justify-content: center;
+}
+#screen-splash .splash-logo {
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,.15);
+  border-radius: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 52px;
+  animation: splashPulse 2s ease-in-out infinite;
+}
+#screen-splash h1 {
+  color: #fff;
+  font-size: 36px;
+  font-weight: 800;
+  margin-top: 20px;
+  letter-spacing: -1px;
+}
+#screen-splash p {
+  color: rgba(255,255,255,.6);
+  font-size: 14px;
+  margin-top: 6px;
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== LOGIN SCREEN ===== */
+#screen-login {
+  background: #fff;
+}
+.login-hero {
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  padding: 60px 24px 40px;
+  text-align: center;
+  color: #fff;
+  border-radius: 0 0 32px 32px;
+}
+.login-hero .icon { font-size: 48px; margin-bottom: 12px; }
+.login-hero h2 { font-size: 26px; font-weight: 800; }
+.login-hero p { opacity: .7; font-size: 13px; margin-top: 4px; }
+.login-form { padding: 28px 24px; }
+.input-field {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 1.5px solid #e0e4e8;
+  border-radius: 14px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 14px;
+  background: #f8f9fb;
+  color: #333;
+  outline: none;
+}
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #aaa;
+}
+.input-wrap { position: relative; }
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.social-login {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+.social-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid #e0e4e8;
+  border-radius: 12px;
+  background: #fff;
+  text-align: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+.lang-toggle {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ===== HOME SCREEN ===== */
+.home-greeting {
+  padding: 8px 20px 0;
+  font-size: 13px;
+  color: #888;
+}
+.home-greeting strong {
+  display: block;
+  font-size: 22px;
+  color: #1a1a2e;
+  margin-top: 2px;
+}
+
+.emergency-banner {
+  margin: 16px 20px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #D32F2F, #F44336);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  cursor: pointer;
+}
+.emergency-banner .em-icon {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,.2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.emergency-banner .em-text h4 { font-size: 14px; font-weight: 700; }
+.emergency-banner .em-text p { font-size: 11px; opacity: .8; }
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0 20px;
+  margin-bottom: 24px;
+}
+.cat-item {
+  text-align: center;
+  cursor: pointer;
+}
+.cat-item .cat-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 6px;
+}
+.cat-item .cat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #555;
+  line-height: 1.3;
+}
+
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: 14px;
+  margin: 0 20px 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+.service-item .svc-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.service-item .svc-info { flex: 1; }
+.service-item .svc-info h4 { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.service-item .svc-info p { font-size: 11px; color: #999; margin-top: 2px; }
+.service-item .svc-info .rating { font-size: 11px; color: #f59e0b; margin-top: 4px; }
+.service-item .svc-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue);
+}
+.service-item .svc-price small {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: #999;
+  text-align: right;
+}
+
+/* ===== SERVICE DETAILS ===== */
+.detail-hero {
+  padding: 56px 24px 28px;
+  color: #fff;
+  position: relative;
+}
+.detail-hero.plumbing { background: linear-gradient(135deg, #1565C0, #0d47a1); }
+.detail-hero.electrical { background: linear-gradient(135deg, #f57f17, #e65100); }
+.detail-hero.cleaning { background: linear-gradient(135deg, #00897B, #004d40); }
+.detail-hero .detail-icon { font-size: 48px; margin-bottom: 12px; }
+.detail-hero h2 { font-size: 24px; font-weight: 800; }
+.detail-hero p { opacity: .8; font-size: 13px; margin-top: 4px; }
+
+.price-card {
+  margin: -20px 20px 16px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.price-card .price { font-size: 32px; font-weight: 800; color: var(--blue); }
+.price-card .price small { font-size: 14px; font-weight: 400; color: #999; }
+.price-card .warranty {
+  background: var(--teal-light);
+  color: var(--teal);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.included-list { padding: 0 20px; margin-bottom: 16px; }
+.included-list .item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+  color: #555;
+}
+.included-list .item .check { color: var(--teal); font-size: 16px; }
+
+.add-cart-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  z-index: 10;
+}
+.add-cart-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== CART SCREEN ===== */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: #fff;
+  border-radius: 14px;
+  margin: 0 20px 10px;
+}
+.cart-item .ci-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.cart-item .ci-info { flex: 1; }
+.cart-item .ci-info h4 { font-size: 13px; font-weight: 600; }
+.cart-item .ci-info p { font-size: 11px; color: #999; }
+.cart-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--blue-light);
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+.cart-qty span { font-weight: 700; font-size: 14px; color: var(--blue); }
+.cart-qty button {
+  width: 24px; height: 24px;
+  border: none;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 7px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cart-total-bar {
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cart-total-bar .total-label { font-size: 13px; color: #888; }
+.cart-total-bar .total-label strong {
+  display: block;
+  font-size: 22px;
+  color: var(--blue);
+}
+.checkout-btn {
+  padding: 12px 28px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== BOOKING SCREEN ===== */
+.stepper {
+  padding: 0 20px;
+}
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.step-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #ccc;
+}
+.step-dot.active { background: var(--blue); }
+.step-dot.done { background: var(--teal); }
+.step-line {
+  width: 2px;
+  flex: 1;
+  background: #e0e0e0;
+  margin: 4px 0;
+}
+.step-line.done { background: var(--teal); }
+.step-content { flex: 1; padding-top: 4px; }
+.step-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.step-content p { font-size: 12px; color: #888; }
+
+.calendar-mini {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 10px;
+}
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+  font-size: 12px;
+}
+.cal-grid .day-name { color: #999; font-size: 10px; font-weight: 600; padding: 4px 0; }
+.cal-grid .day {
+  padding: 8px 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.cal-grid .day.selected {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+}
+.cal-grid .day.today { color: var(--blue); font-weight: 600; }
+
+.time-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.time-slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1.5px solid #e8ecf0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.time-slot.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.time-slot .ts-icon { font-size: 18px; }
+
+/* ===== PAYMENT SCREEN ===== */
+.summary-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 0 20px 16px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #666;
+}
+.summary-row.total {
+  border-top: 1.5px solid #eee;
+  margin-top: 8px;
+  padding-top: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.summary-row.total .val { color: var(--blue); }
+.summary-row.discount { color: var(--teal); }
+
+.loyalty-bar {
+  margin: 0 20px 16px;
+  padding: 14px 16px;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.loyalty-bar .star { font-size: 24px; }
+.loyalty-bar .toggle {
+  width: 44px; height: 24px;
+  background: var(--orange);
+  border-radius: 99px;
+  position: relative;
+}
+.loyalty-bar .toggle::after {
+  content: '';
+  width: 20px; height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px; right: 2px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  margin: 0 20px 8px;
+  background: #fff;
+  border: 1.5px solid #e8ecf0;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.payment-option.selected {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.payment-option .po-icon { font-size: 22px; }
+.payment-option .po-check {
+  margin-left: auto;
+  color: var(--blue);
+  font-size: 20px;
+}
+
+/* ===== ORDER TRACKING ===== */
+.tracking-timeline {
+  padding: 0 20px;
+}
+.tl-step {
+  display: flex;
+  gap: 16px;
+}
+.tl-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tl-dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  background: #e0e0e0;
+  color: #999;
+}
+.tl-dot.done { background: var(--blue); color: #fff; }
+.tl-dot.current {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(21,101,192,.15);
+}
+.tl-line {
+  width: 2px;
+  height: 32px;
+  background: #e0e0e0;
+}
+.tl-line.done { background: var(--blue); }
+.tl-content {
+  flex: 1;
+  padding: 6px 0 26px;
+}
+.tl-content h4 { font-size: 14px; font-weight: 600; }
+.tl-content p { font-size: 11px; color: #999; }
+.tl-content .current-label {
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.qr-card {
+  text-align: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 20px;
+}
+.qr-card .qr-placeholder {
+  width: 120px; height: 120px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  color: #333;
+}
+.qr-card p { font-size: 11px; color: #999; }
+
+/* ===== PROFILE SCREEN ===== */
+.profile-hero {
+  padding: 56px 24px 28px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+  color: #fff;
+  text-align: center;
+  border-radius: 0 0 28px 28px;
+}
+.profile-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 auto 10px;
+}
+.profile-hero h3 { font-size: 20px; font-weight: 700; }
+.profile-hero p { opacity: .7; font-size: 13px; }
+
+.points-card {
+  margin: -16px 20px 16px;
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+}
+.points-card .star { font-size: 32px; }
+.points-card .pts-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #d97706;
+}
+.points-card .pts-label { font-size: 12px; color: #92400e; }
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.settings-item .si-icon {
+  width: 36px; height: 36px;
+  background: var(--blue-light);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue);
+  font-size: 16px;
+}
+.settings-item .si-label { flex: 1; font-weight: 500; }
+.settings-item .si-arrow { color: #ccc; font-size: 18px; }
+.toggle-sm {
+  width: 40px; height: 22px;
+  background: var(--blue);
+  border-radius: 99px;
+  position: relative;
+}
+.toggle-sm::after {
+  content: '';
+  width: 18px; height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px; right: 2px;
+}
+.toggle-sm.off { background: #ccc; }
+.toggle-sm.off::after { right: auto; left: 2px; }
+
+.logout-btn {
+  margin: 20px;
+  padding: 14px;
+  border: 1.5px solid var(--red);
+  background: transparent;
+  color: var(--red);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  width: calc(100% - 40px);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== SUPPORT SCREEN ===== */
+.chat-area {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.msg.user {
+  align-self: flex-end;
+  background: var(--blue);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg.support {
+  align-self: flex-start;
+  background: #fff;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+.msg .msg-time {
+  font-size: 9px;
+  opacity: .6;
+  margin-top: 4px;
+}
+.chat-input-bar {
+  padding: 10px 16px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1;
+  padding: 10px 16px;
+  background: #f5f7fa;
+  border: none;
+  border-radius: 99px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+}
+.send-btn {
+  width: 36px; height: 36px;
+  background: var(--blue);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* ===== CONFIRMATION SCREEN ===== */
+#screen-confirmation {
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+}
+.confirm-check {
+  width: 80px; height: 80px;
+  background: var(--teal-light);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+  color: var(--teal);
+  margin-bottom: 20px;
+  animation: confirmBounce .6s ease;
+}
+@keyframes confirmBounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+#screen-confirmation h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+#screen-confirmation .booking-id {
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+#screen-confirmation .qr-confirm {
+  width: 140px; height: 140px;
+  background: #f5f7fa;
+  border-radius: 16px;
+  margin: 24px auto;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px;
+}
+.warranty-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--teal-light);
+  border-radius: 12px;
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+/* ===== SCREEN INFO PANEL ===== */
+.screen-info {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+.screen-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.screen-info p {
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.feature-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.feature-chips .chip {
+  padding: 6px 14px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 500px) {
+  .phone-frame {
+    width: 100%;
+    max-width: 375px;
+    height: 85vh;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .phone-notch { display: none; }
+  .phone-screen { border-radius: 0; }
+  .phone-stage { padding: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <div class="logo">
+    <div class="logo-icon">🏠</div>
+    <h1>HomeEase</h1>
+  </div>
+  <p>Interactive preview of every screen in the HomeEase app. Tap any screen name to explore.</p>
+</div>
+
+<div class="screen-nav-wrap">
+  <div class="screen-nav" id="screenNav">
+    <button class="active" onclick="showScreen('splash')">Splash</button>
+    <button onclick="showScreen('login')">Login</button>
+    <button onclick="showScreen('home')">Home</button>
+    <button onclick="showScreen('details')">Service Details</button>
+    <button onclick="showScreen('cart')">Cart</button>
+    <button onclick="showScreen('booking')">Booking</button>
+    <button onclick="showScreen('payment')">Payment</button>
+    <button onclick="showScreen('tracking')">Order Tracking</button>
+    <button onclick="showScreen('confirmation')">Confirmation</button>
+    <button onclick="showScreen('profile')">Profile</button>
+    <button onclick="showScreen('support')">Support</button>
+  </div>
+</div>
+
+<div class="phone-stage">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+
+      <!-- ===== SPLASH ===== -->
+      <div class="app-screen active" id="screen-splash">
+        <div class="splash-logo">🏠</div>
+        <h1>HomeEase</h1>
+        <p>Home services, simplified</p>
+      </div>
+
+      <!-- ===== LOGIN ===== -->
+      <div class="app-screen" id="screen-login">
+        <div class="login-hero">
+          <div class="icon">🏠</div>
+          <h2>Welcome Back</h2>
+          <p>Sign in to continue</p>
+        </div>
+        <div class="login-form">
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input class="input-field" value="ahmed@example.com" readonly>
+          </div>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input class="input-field" type="password" value="••••••••" readonly>
+          </div>
+          <button class="btn-primary">Sign In</button>
+          <div class="social-login">
+            <div class="social-btn">G</div>
+            <div class="social-btn">📱</div>
+          </div>
+          <div class="lang-toggle">العربية ↔ English</div>
+        </div>
+      </div>
+
+      <!-- ===== HOME ===== -->
+      <div class="app-screen" id="screen-home">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="home-greeting">Good morning 👋<strong>Ahmed</strong></div>
+
+        <div class="search-bar">🔍 Search services...</div>
+
+        <div class="emergency-banner" onclick="showScreen('details')">
+          <div class="em-icon">⚡</div>
+          <div class="em-text">
+            <h4>Emergency Service</h4>
+            <p>Priority booking within 1 hour</p>
+          </div>
+        </div>
+
+        <div class="section-title">Categories</div>
+        <div class="categories-grid">
+          <div class="cat-item" onclick="showScreen('details')">
+            <div class="cat-icon" style="background:#e3f2fd; color:#1565C0">🔧</div>
+            <div class="cat-label">Plumbing</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#fff8e1; color:#f57f17">⚡</div>
+            <div class="cat-label">Electrical</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#e0f2f1; color:#00897B">🧹</div>
+            <div class="cat-label">Cleaning</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#f3e5f5; color:#7b1fa2">🎨</div>
+            <div class="cat-label">Painting</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#efebe9; color:#5d4037">🪚</div>
+            <div class="cat-label">Carpentry</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#e0f7fa; color:#0097a7">❄️</div>
+            <div class="cat-label">AC</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#fff3e0; color:#e65100">🔌</div>
+            <div class="cat-label">Appliances</div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon" style="background:#fce4ec; color:#c62828">🐛</div>
+            <div class="cat-label">Pest Control</div>
+          </div>
+        </div>
+
+        <div class="section-title">Popular Services</div>
+        <div class="service-item" onclick="showScreen('details')">
+          <div class="svc-icon" style="background:#e3f2fd; color:#1565C0">🔧</div>
+          <div class="svc-info">
+            <h4>Pipe Repair</h4>
+            <p>Fix leaking or broken pipes</p>
+            <div class="rating">⭐ 4.7 (142 reviews)</div>
+          </div>
+          <div class="svc-price">250<small>EGP</small></div>
+        </div>
+        <div class="service-item">
+          <div class="svc-icon" style="background:#e0f7fa; color:#0097a7">❄️</div>
+          <div class="svc-info">
+            <h4>AC Maintenance</h4>
+            <p>Cleaning and gas refill</p>
+            <div class="rating">⭐ 4.7 (98 reviews)</div>
+          </div>
+          <div class="svc-price">350<small>EGP</small></div>
+        </div>
+        <div class="service-item">
+          <div class="svc-icon" style="background:#e0f2f1; color:#00897B">🧹</div>
+          <div class="svc-info">
+            <h4>Deep Cleaning</h4>
+            <p>Full apartment deep cleaning</p>
+            <div class="rating">⭐ 4.9 (210 reviews)</div>
+          </div>
+          <div class="svc-price">500<small>EGP</small></div>
+        </div>
+        <div style="height:80px"></div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active"><div class="nav-icon">🏠</div>Home</div>
+          <div class="nav-item" onclick="showScreen('tracking')"><div class="nav-icon">📋</div>Orders</div>
+          <div class="nav-item" onclick="showScreen('cart')" style="position:relative"><div class="nav-icon">🛒</div>Cart<div class="badge">2</div></div>
+          <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div>Profile</div>
+        </div>
+      </div>
+
+      <!-- ===== SERVICE DETAILS ===== -->
+      <div class="app-screen" id="screen-details">
+        <div class="detail-hero plumbing">
+          <div class="app-bar" style="position:absolute; top:0; left:0; right:0; background:transparent; padding-top:48px;">
+            <div class="back-btn" onclick="showScreen('home')">←</div>
+            <h2></h2>
+          </div>
+          <div style="padding-top: 40px">
+            <div class="detail-icon">🔧</div>
+            <h2>Pipe Repair</h2>
+            <p>Professional plumbing service</p>
+          </div>
+        </div>
+        <div class="price-card">
+          <div class="price">250 <small>EGP</small></div>
+          <div class="warranty">🛡️ 30-day warranty</div>
+        </div>
+        <div class="section-title" style="margin-top:4px">What's Included</div>
+        <div class="included-list">
+          <div class="item"><span class="check">✓</span> Diagnosis & inspection</div>
+          <div class="item"><span class="check">✓</span> Pipe repair or replacement</div>
+          <div class="item"><span class="check">✓</span> Leak testing</div>
+          <div class="item"><span class="check">✓</span> Cleanup after service</div>
+          <div class="item"><span class="check">✓</span> 30-day service warranty</div>
+        </div>
+        <div class="section-title">Reviews</div>
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+            <div style="width:32px;height:32px;background:#e3f2fd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px">N</div>
+            <div>
+              <div style="font-size:13px;font-weight:600">Nour Ahmed</div>
+              <div style="font-size:11px;color:#f59e0b">⭐⭐⭐⭐⭐</div>
+            </div>
+          </div>
+          <p style="font-size:12px;color:#666;line-height:1.5">Excellent service! The technician arrived on time and fixed the pipe quickly. Highly recommended.</p>
+        </div>
+        <div style="height:80px"></div>
+        <div class="add-cart-bar">
+          <button class="add-cart-btn" onclick="showScreen('cart')">🛒 Add to Cart — 250 EGP</button>
+        </div>
+      </div>
+
+      <!-- ===== CART ===== -->
+      <div class="app-screen" id="screen-cart">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="app-bar"><h2>My Cart</h2></div>
+        <div style="padding-top: 8px">
+          <div class="cart-item">
+            <div class="ci-icon" style="background:#e3f2fd;color:#1565C0">🔧</div>
+            <div class="ci-info"><h4>Pipe Repair</h4><p>250 EGP</p></div>
+            <div class="cart-qty"><button>−</button><span>1</span><button>+</button></div>
+          </div>
+          <div class="cart-item">
+            <div class="ci-icon" style="background:#e0f7fa;color:#0097a7">❄️</div>
+            <div class="ci-info"><h4>AC Maintenance</h4><p>350 EGP</p></div>
+            <div class="cart-qty"><button>−</button><span>1</span><button>+</button></div>
+          </div>
+        </div>
+        <div style="margin:16px 20px;padding:12px 16px;background:#fffbeb;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:12px">
+          ⭐ <span>You have <strong>2,450 points</strong> — save up to 24 EGP</span>
+        </div>
+        <div style="height:160px"></div>
+        <div class="cart-total-bar">
+          <div class="total-label">Total<strong>600 EGP</strong></div>
+          <button class="checkout-btn" onclick="showScreen('booking')">Proceed →</button>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div>Home</div>
+          <div class="nav-item"><div class="nav-icon">📋</div>Orders</div>
+          <div class="nav-item active"><div class="nav-icon">🛒</div>Cart</div>
+          <div class="nav-item" onclick="showScreen('profile')"><div class="nav-icon">👤</div>Profile</div>
+        </div>
+      </div>
+
+      <!-- ===== BOOKING ===== -->
+      <div class="app-screen" id="screen-booking">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="app-bar">
+          <div class="back-btn" onclick="showScreen('cart')">←</div>
+          <h2>Booking Details</h2>
+        </div>
+        <div class="stepper">
+          <div class="step">
+            <div class="step-indicator">
+              <div class="step-dot done">✓</div>
+              <div class="step-line done"></div>
+            </div>
+            <div class="step-content">
+              <h4>Select Date</h4>
+              <p>Saturday, Jul 26, 2026</p>
+              <div class="calendar-mini">
+                <div class="cal-header"><span>◀</span><span>July 2026</span><span>▶</span></div>
+                <div class="cal-grid">
+                  <div class="day-name">Su</div><div class="day-name">Mo</div><div class="day-name">Tu</div><div class="day-name">We</div><div class="day-name">Th</div><div class="day-name">Fr</div><div class="day-name">Sa</div>
+                  <div class="day"></div><div class="day"></div><div class="day"></div><div class="day">1</div><div class="day">2</div><div class="day">3</div><div class="day">4</div>
+                  <div class="day">5</div><div class="day">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div><div class="day">10</div><div class="day">11</div>
+                  <div class="day">12</div><div class="day">13</div><div class="day">14</div><div class="day">15</div><div class="day">16</div><div class="day">17</div><div class="day">18</div>
+                  <div class="day">19</div><div class="day">20</div><div class="day">21</div><div class="day">22</div><div class="day">23</div><div class="day">24</div><div class="day today">25</div>
+                  <div class="day selected">26</div><div class="day">27</div><div class="day">28</div><div class="day">29</div><div class="day">30</div><div class="day">31</div><div class="day"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-indicator">
+              <div class="step-dot active">2</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h4>Select Time</h4>
+              <div class="time-slots">
+                <div class="time-slot"><span class="ts-icon">☀️</span> Morning (9AM–12PM)</div>
+                <div class="time-slot selected"><span class="ts-icon">🌤️</span> Afternoon (12PM–5PM)</div>
+                <div class="time-slot"><span class="ts-icon">🌙</span> Evening (5PM–9PM)</div>
+              </div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-indicator"><div class="step-dot">3</div></div>
+            <div class="step-content">
+              <h4>Address</h4>
+              <p style="color:#aaa">Enter your address</p>
+            </div>
+          </div>
+        </div>
+        <div style="padding:16px 20px">
+          <button class="btn-primary" onclick="showScreen('payment')">Next →</button>
+        </div>
+      </div>
+
+      <!-- ===== PAYMENT ===== -->
+      <div class="app-screen" id="screen-payment">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="app-bar">
+          <div class="back-btn" onclick="showScreen('booking')">←</div>
+          <h2>Payment</h2>
+        </div>
+        <div class="summary-card">
+          <div style="font-size:15px;font-weight:700;margin-bottom:12px">Order Summary</div>
+          <div class="summary-row"><span>Pipe Repair × 1</span><span>250 EGP</span></div>
+          <div class="summary-row"><span>AC Maintenance × 1</span><span>350 EGP</span></div>
+          <div class="summary-row" style="border-top:1px solid #f0f0f0;padding-top:8px"><span>Subtotal</span><span>600 EGP</span></div>
+          <div class="summary-row discount"><span>🎁 Loyalty Discount</span><span>−24 EGP</span></div>
+          <div class="summary-row total"><span>Total</span><span class="val">576 EGP</span></div>
+        </div>
+        <div class="loyalty-bar">
+          <div class="star">⭐</div>
+          <div style="flex:1"><div style="font-weight:600">Use 2,400 points</div><div style="font-size:11px;color:#92400e">Save 24 EGP</div></div>
+          <div class="toggle"></div>
+        </div>
+        <div style="padding:0 20px 8px;font-size:15px;font-weight:700">Payment Method</div>
+        <div class="payment-option selected">
+          <div class="po-icon">💵</div>
+          <div><div style="font-weight:600">Cash</div><div style="font-size:11px;color:#999">Pay on arrival</div></div>
+          <div class="po-check">✓</div>
+        </div>
+        <div class="payment-option">
+          <div class="po-icon">💳</div>
+          <div><div style="font-weight:600">Card</div><div style="font-size:11px;color:#999">Pay with Stripe</div></div>
+        </div>
+        <div style="padding:20px">
+          <button class="btn-primary" onclick="showScreen('confirmation')">Confirm Booking · 576 EGP</button>
+        </div>
+      </div>
+
+      <!-- ===== TRACKING ===== -->
+      <div class="app-screen" id="screen-tracking">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="app-bar">
+          <div class="back-btn" onclick="showScreen('home')">←</div>
+          <h2>Order #HE-1042</h2>
+        </div>
+        <div class="tracking-timeline" style="padding-top:8px">
+          <div class="tl-step">
+            <div class="tl-indicator"><div class="tl-dot done">✓</div><div class="tl-line done"></div></div>
+            <div class="tl-content"><h4>Pending</h4><p>Order placed successfully</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-indicator"><div class="tl-dot done">✓</div><div class="tl-line done"></div></div>
+            <div class="tl-content"><h4>Confirmed</h4><p>Payment verified</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-indicator"><div class="tl-dot current">👷</div><div class="tl-line"></div></div>
+            <div class="tl-content"><h4>Technician Assigned</h4><p class="current-label">Ahmed Hassan is on the way</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-indicator"><div class="tl-dot">🔧</div><div class="tl-line"></div></div>
+            <div class="tl-content"><h4>In Progress</h4><p>Service being performed</p></div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-indicator"><div class="tl-dot">✓</div></div>
+            <div class="tl-content"><h4>Completed</h4><p>Service finished</p></div>
+          </div>
+        </div>
+
+        <div class="qr-card">
+          <div style="font-size:14px;font-weight:700;margin-bottom:8px">Technician Check-in QR</div>
+          <div class="qr-placeholder">▣</div>
+          <p>Show this to the technician on arrival</p>
+        </div>
+
+        <div style="margin:0 20px;padding:14px 16px;background:#e8f5e9;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:13px;color:#2e7d32">
+          🛡️ <span><strong>30-Day Warranty</strong> — covered for all services</span>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+
+      <!-- ===== CONFIRMATION ===== -->
+      <div class="app-screen" id="screen-confirmation">
+        <div class="confirm-check">✓</div>
+        <h2>Booking Confirmed!</h2>
+        <div class="booking-id">Booking #HE-1042</div>
+        <div class="qr-confirm">▣</div>
+        <p style="color:#888;font-size:13px;max-width:260px;line-height:1.5">Your booking has been confirmed. Show the QR code to your technician when they arrive.</p>
+        <div class="warranty-badge">🛡️ 30-day warranty included</div>
+      </div>
+
+      <!-- ===== PROFILE ===== -->
+      <div class="app-screen" id="screen-profile">
+        <div class="profile-hero">
+          <div class="profile-avatar">A</div>
+          <h3>Ahmed Hassan</h3>
+          <p>ahmed@example.com</p>
+        </div>
+        <div class="points-card">
+          <div class="star">⭐</div>
+          <div>
+            <div class="pts-value">2,450</div>
+            <div class="pts-label">Loyalty Points = 24 EGP</div>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:16px;margin:0 20px;overflow:hidden">
+          <div class="settings-item">
+            <div class="si-icon">🌙</div>
+            <div class="si-label">Dark Mode</div>
+            <div class="toggle-sm off"></div>
+          </div>
+          <div class="settings-item">
+            <div class="si-icon">🌐</div>
+            <div class="si-label">Language</div>
+            <div style="font-size:13px;color:var(--blue);font-weight:600">EN | AR</div>
+          </div>
+          <div class="settings-item">
+            <div class="si-icon">👤</div>
+            <div class="si-label">Edit Profile</div>
+            <div class="si-arrow">›</div>
+          </div>
+          <div class="settings-item">
+            <div class="si-icon">📍</div>
+            <div class="si-label">Address</div>
+            <div class="si-arrow">›</div>
+          </div>
+          <div class="settings-item" onclick="showScreen('support')">
+            <div class="si-icon">💬</div>
+            <div class="si-label">Support</div>
+            <div class="si-arrow">›</div>
+          </div>
+          <div class="settings-item" style="border:none">
+            <div class="si-icon">ℹ️</div>
+            <div class="si-label">About</div>
+            <div class="si-arrow">›</div>
+          </div>
+        </div>
+        <button class="logout-btn">🚪 Logout</button>
+
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showScreen('home')"><div class="nav-icon">🏠</div>Home</div>
+          <div class="nav-item"><div class="nav-icon">📋</div>Orders</div>
+          <div class="nav-item" onclick="showScreen('cart')"><div class="nav-icon">🛒</div>Cart</div>
+          <div class="nav-item active"><div class="nav-icon">👤</div>Profile</div>
+        </div>
+      </div>
+
+      <!-- ===== SUPPORT ===== -->
+      <div class="app-screen" id="screen-support">
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="app-bar primary">
+          <div class="back-btn" onclick="showScreen('profile')">←</div>
+          <h2>Support</h2>
+          <div style="font-size:20px;cursor:pointer">📞</div>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 16px;background:rgba(21,101,192,.04)">
+          <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;font-size:11px;cursor:pointer">📞<br>Call</div>
+          <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;font-size:11px;cursor:pointer">❓<br>FAQ</div>
+          <div style="flex:1;background:#fff;border-radius:10px;padding:10px;text-align:center;font-size:11px;cursor:pointer">🛡️<br>Warranty</div>
+        </div>
+        <div class="chat-area">
+          <div class="msg support">
+            Hello! 👋 How can I help you today?
+            <div class="msg-time">10:30 AM</div>
+          </div>
+          <div class="msg user">
+            Hi, I have a question about my booking #HE-1042
+            <div class="msg-time">10:31 AM</div>
+          </div>
+          <div class="msg support">
+            Sure! I can see your booking for Pipe Repair + AC Maintenance scheduled for tomorrow. What would you like to know?
+            <div class="msg-time">10:31 AM</div>
+          </div>
+          <div class="msg user">
+            Can I change the time slot to morning?
+            <div class="msg-time">10:32 AM</div>
+          </div>
+          <div class="msg support">
+            Of course! I've updated your time slot to Morning (9AM–12PM). The technician Ahmed Hassan will be there. ✅
+            <div class="msg-time">10:33 AM</div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input class="chat-input" placeholder="Type a message..." readonly>
+          <button class="send-btn">➤</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Screen Info -->
+<div class="screen-info" id="screenInfo">
+  <h3 id="infoTitle">Splash Screen</h3>
+  <p id="infoDesc">Animated logo with fade and scale effects. Automatically navigates to login or home based on auth state.</p>
+  <div class="feature-chips" id="infoChips">
+    <div class="chip">Auto-navigation</div>
+    <div class="chip">Brand animation</div>
+    <div class="chip">Firebase Auth check</div>
+  </div>
+</div>
+
+<script>
+const screenData = {
+  splash: {
+    title: 'Splash Screen',
+    desc: 'Animated logo with fade and scale effects. Checks Firebase auth state and auto-navigates to login or home screen.',
+    chips: ['Auto-navigation', 'Brand animation', 'Firebase Auth']
+  },
+  login: {
+    title: 'Login Screen',
+    desc: 'Supports email/password, Google Sign-In, and phone OTP authentication. Includes password reset, language toggle, and registration link.',
+    chips: ['Email login', 'Google Sign-In', 'Phone OTP', 'AR/EN toggle', 'Password reset']
+  },
+  home: {
+    title: 'Home Screen',
+    desc: 'Main dashboard with search, emergency booking banner, 4×2 category grid, and popular services list with ratings. Includes bottom navigation with cart badge.',
+    chips: ['Search', 'Emergency CTA', '8 categories', 'AI recommendations', 'Cart badge']
+  },
+  details: {
+    title: 'Service Details',
+    desc: 'Hero header with category color, price card with warranty badge, included items list, and customer reviews. Bottom sheet for adding to cart.',
+    chips: ['Category colors', '30-day warranty', 'Reviews', 'Add to cart']
+  },
+  cart: {
+    title: 'Cart Screen',
+    desc: 'Item list with quantity controls, loyalty points preview, and total summary. Proceed to booking flow with a single tap.',
+    chips: ['Quantity controls', 'Loyalty points', 'Total calculation', 'Remove items']
+  },
+  booking: {
+    title: 'Booking Screen',
+    desc: '3-step stepper: calendar date picker, time slot selection (morning/afternoon/evening), and address form with details and notes.',
+    chips: ['Calendar picker', '3 time slots', 'Address form', 'Emergency mode', 'Stepper UI']
+  },
+  payment: {
+    title: 'Payment Screen',
+    desc: 'Order summary, loyalty points redemption toggle, and payment method selection. Supports cash and Stripe card payments with emergency surcharge.',
+    chips: ['Cash/Card', 'Loyalty redemption', 'Order summary', 'Stripe ready', 'Emergency surcharge']
+  },
+  tracking: {
+    title: 'Order Tracking',
+    desc: 'Visual status timeline from Pending to Completed. Shows QR code for technician check-in, warranty info, and cancel/rate actions.',
+    chips: ['Status timeline', 'QR check-in', 'Live updates', 'Warranty claim', 'Cancel/Rate']
+  },
+  confirmation: {
+    title: 'Booking Confirmation',
+    desc: 'Success animation with QR code display. Shows booking ID, warranty information, and return-to-home action.',
+    chips: ['Success animation', 'QR code', 'Booking ID', 'Warranty badge']
+  },
+  profile: {
+    title: 'Profile Screen',
+    desc: 'User info card with loyalty points display. Settings for dark mode, language toggle, edit profile, address management, and support access.',
+    chips: ['Loyalty points', 'Dark mode', 'AR/EN', 'Edit profile', 'Logout']
+  },
+  support: {
+    title: 'Support Chat',
+    desc: 'Real-time Firebase chat with support team. Quick actions for phone hotline, FAQ, and warranty claims. Message bubbles with timestamps.',
+    chips: ['Real-time chat', 'Phone hotline', 'FAQ', 'Warranty claims', 'Firebase Messages']
+  }
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+
+  document.querySelectorAll('.screen-nav button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const info = screenData[id];
+  if (info) {
+    document.getElementById('infoTitle').textContent = info.title;
+    document.getElementById('infoDesc').textContent = info.desc;
+    document.getElementById('infoChips').innerHTML = info.chips.map(c => '<div class="chip">' + c + '</div>').join('');
+  }
+
+  // Scroll nav button into view
+  event.target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+</script>
+</body>
+</html>
