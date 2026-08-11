@@ -44,9 +44,9 @@ class _SplashScreenState extends State<SplashScreen>
     final auth = context.read<AuthProvider>();
 
     if (auth.isLoggedIn) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.of(context).pushReplacementNamed('/role');
     } else {
-      Navigator.of(context).pushReplacementNamed('/login');
+      Navigator.of(context).pushReplacementNamed('/role');
     }
   }
 
