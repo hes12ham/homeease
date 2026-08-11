@@ -51,6 +51,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final servicesProvider = context.watch<ServicesProvider>();
+
+    // Auto-load services if empty
+    if (servicesProvider.services.isEmpty && !servicesProvider.isLoading) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        servicesProvider.loadServices();
+      });
+    }
     final userName = auth.user?.name ?? 'زائر';
     final isLoggedIn = auth.firebaseUser != null;
 
