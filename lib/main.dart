@@ -42,7 +42,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: const HomeEaseApp(),
+      child: const HomeServiceApp(),
     ),
   );
 }

@@ -217,9 +217,9 @@ class ProfileScreen extends StatelessWidget {
               onTap: () {
                 showAboutDialog(
                   context: context,
-                  applicationName: 'HomeEase',
+                  applicationName: 'Home Service',
                   applicationVersion: '1.0.0',
-                  applicationLegalese: '© 2026 HomeEase. All rights reserved.',
+                  applicationLegalese: '© 2026 Home Service. All rights reserved.',
                 );
               },
             ),

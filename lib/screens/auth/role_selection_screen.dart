@@ -34,11 +34,11 @@ class RoleSelectionScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              const Text('هوم إيز',
+              const Text('خدمات منزلية',
                 style: TextStyle(fontSize: 36, fontWeight: FontWeight.w800,
                     color: Colors.white, letterSpacing: 1)),
               const SizedBox(height: 6),
-              Text('خدمات منزلية بكل سهولة',
+              Text('Home Service',
                 style: TextStyle(fontSize: 16,
                     color: Colors.white.withValues(alpha: 0.7))),
 

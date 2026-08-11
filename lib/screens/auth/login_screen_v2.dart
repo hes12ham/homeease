@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 14),
                   const Text(
-                    'هوم إيز',
+                    'خدمات منزلية',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,

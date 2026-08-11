@@ -11,8 +11,8 @@ import 'screens/auth/login_screen_v2.dart';
 import 'screens/auth/client_register_screen.dart';
 import 'screens/main_nav_screen.dart';
 
-class HomeEaseApp extends StatelessWidget {
-  const HomeEaseApp({super.key});
+class HomeServiceApp extends StatelessWidget {
+  const HomeServiceApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class HomeEaseApp extends StatelessWidget {
     final localeProvider = Provider.of<LocaleProvider>(context);
 
     return MaterialApp(
-      title: 'هوم إيز — HomeEase',
+      title: 'Home Service — خدمات منزلية',
       debugShowCheckedModeBanner: false,
       locale: localeProvider.locale,
       supportedLocales: const [Locale('ar'), Locale('en')],

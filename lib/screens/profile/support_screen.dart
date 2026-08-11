@@ -23,7 +23,7 @@ class _SupportScreenState extends State<SupportScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = context.read<AuthProvider>();
       if (auth.firebaseUser != null) {
-        context.read<ChatProvider>().loadMessages(auth.firebaseUser!.uid);
+        if (auth.firebaseUser != null) { context.read<ChatProvider>().loadMessages(auth.firebaseUser!.uid); }
       }
     });
   }
@@ -177,6 +177,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         if (_msgController.text.trim().isEmpty) return;
                         if (auth.firebaseUser == null) return;
 
+                        if (auth.firebaseUser == null) return;
                         chat.sendMessage(
                           userId: auth.firebaseUser!.uid,
                           message: _msgController.text.trim(),

@@ -15,7 +15,7 @@ class AppLocalizations {
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
       // General
-      'app_name': 'HomeEase',
+      'app_name': 'Home Service',
       'home': 'Home',
       'services': 'Services',
       'cart': 'Cart',
@@ -191,7 +191,7 @@ class AppLocalizations {
     },
     'ar': {
       // General
-      'app_name': 'هوم إيز',
+      'app_name': 'خدمات منزلية',
       'home': 'الرئيسية',
       'services': 'الخدمات',
       'cart': 'السلة',

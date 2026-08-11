@@ -32,8 +32,8 @@ class _BookingScreenState extends State<BookingScreen> {
     super.initState();
     final auth = context.read<AuthProvider>();
     if (auth.user?.address.isNotEmpty == true) {
-      _addressController.text = auth.user!.address;
-      context.read<BookingProvider>().setAddress(auth.user!.address);
+      _addressController.text = auth.user?.address ?? '';
+      context.read<BookingProvider>().setAddress(auth.user?.address ?? '');
     }
   }
 
