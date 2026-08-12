@@ -51,10 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+    AuthProvider? auth;
+    try { auth = context.watch<AuthProvider>(); } catch (_) {}
     final servicesProvider = context.watch<ServicesProvider>();
-    final userName = auth.user?.name ?? 'زائر';
-    final isLoggedIn = auth.firebaseUser != null;
+    final userName = auth?.user?.name ?? 'زائر';
+    final isLoggedIn = auth?.firebaseUser != null;
 
     // Auto-load services
     if (servicesProvider.services.isEmpty && !servicesProvider.isLoading) {

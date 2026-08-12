@@ -16,22 +16,19 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase safely
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    debugPrint('✅ Firebase initialized successfully');
   } catch (e) {
-    debugPrint('⚠️ Firebase init error: $e');
+    debugPrint('Firebase init error: $e');
   }
 
-  // Load saved preferences
   final themeProvider = ThemeProvider();
-  await themeProvider.loadTheme();
+  try { await themeProvider.loadTheme(); } catch (_) {}
 
   final localeProvider = LocaleProvider();
-  await localeProvider.loadLocale();
+  try { await localeProvider.loadLocale(); } catch (_) {}
 
   runApp(
     MultiProvider(

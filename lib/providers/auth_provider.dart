@@ -23,19 +23,28 @@ class AuthProvider extends ChangeNotifier {
   bool get isLoggedIn => _firebaseUser != null;
 
   AuthProvider() {
-    _auth.authStateChanges().listen(_onAuthStateChanged);
+    try {
+      _auth.authStateChanges().listen(_onAuthStateChanged);
+    } catch (e) {
+      debugPrint('Auth listener error: \$e');
+    }
   }
 
   Future<void> _onAuthStateChanged(User? user) async {
-    _firebaseUser = user;
-    if (user != null) {
-      await _loadUserData(user.uid);
-      // FCM token update - non-critical, don't crash if fails
-      try { await _updateFCMToken(); } catch (_) {}
-    } else {
+    try {
+      _firebaseUser = user;
+      if (user != null) {
+        await _loadUserData(user.uid);
+        try { await _updateFCMToken(); } catch (_) {}
+      } else {
+        _user = null;
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Auth state change error: \$e');
       _user = null;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   Future<void> _loadUserData(String uid) async {

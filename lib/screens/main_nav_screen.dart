@@ -21,7 +21,10 @@ class _MainNavScreenState extends State<MainNavScreen> {
   @override
   Widget build(BuildContext context) {
     final cartCount = context.watch<CartProvider>().items.length;
-    final isLoggedIn = context.watch<AuthProvider>().firebaseUser != null;
+    bool isLoggedIn = false;
+    try {
+      isLoggedIn = context.watch<AuthProvider>().firebaseUser != null;
+    } catch (_) {}
 
     return Scaffold(
       body: _buildBody(isLoggedIn),
