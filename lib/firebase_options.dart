@@ -18,22 +18,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDummy-replace-if-needed',
+    apiKey: 'AIzaSyAUuPvI4VC3oMQdp_g2SGtW8Y4yLrZBrRE',
     appId: '1:796568810415:android:c45d04c6c259ea846bb55a',
     messagingSenderId: '796568810415',
     projectId: 'homeease-cf79b',
     storageBucket: 'homeease-cf79b.firebasestorage.app',
   );
-
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDummy-replace-if-needed',
+    apiKey: 'AIzaSyDMJcsKtO6mbBNHATnh9jbf5riwS3ef6dw',
     appId: '1:796568810415:web:9a49d5795d4d2e396bb55a',
     messagingSenderId: '796568810415',
     projectId: 'homeease-cf79b',
-    storageBucket: 'homeease-cf79b.firebasestorage.app',
     authDomain: 'homeease-cf79b.firebaseapp.com',
+    storageBucket: 'homeease-cf79b.firebasestorage.app',
+    measurementId: 'G-FPYZRK0KYV',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDummy-replace-if-needed',
     appId: '1:796568810415:ios:0000000000000000',
