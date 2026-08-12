@@ -97,14 +97,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(_getGreeting(),
                               style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
                           Text(userName,
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                              overflow: TextOverflow.ellipsis),
                         ],
                       ),
                     ),
                     if (!isLoggedIn)
                       TextButton.icon(
-                        icon: const Icon(Icons.login, size: 18),
-                        label: const Text('دخول'),
+                        icon: const Icon(Icons.login, size: 16),
+                        label: const Text('دخول', style: TextStyle(fontSize: 13)),
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                             builder: (_) => const LoginScreen(),
@@ -147,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // ===== 4 CATEGORY CHIPS =====
             const SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
+                padding: EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Text('التصنيفات',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               ),
@@ -171,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () => setState(() => _selectedCategory = key),
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected ? color : Colors.white,
                           borderRadius: BorderRadius.circular(25),
@@ -298,8 +299,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             service.nameAr,
                                             style: const TextStyle(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 15,
+                                              fontSize: 14,
                                             ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 4),
                                           Text(

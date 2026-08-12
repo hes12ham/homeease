@@ -92,7 +92,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     children: [
                       Icon(Icons.lock_outline, color: Color(0xFF1565C0)),
                       SizedBox(width: 10),
-                      Text('تسجيل الدخول مطلوب'),
+                      Flexible(child: Text('تسجيل الدخول مطلوب')),
                     ],
                   ),
                   content: const Text(
