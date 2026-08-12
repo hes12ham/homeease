@@ -437,7 +437,7 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
     );
   }
 
-  void _handleRegister() {
+  void _handleRegister() async {
     if (_nameCtrl.text.trim().isEmpty) {
       _showError('أدخل اسمك بالكامل');
       return;
