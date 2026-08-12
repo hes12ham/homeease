@@ -74,11 +74,47 @@ class _BookingScreenState extends State<BookingScreen> {
           if (_currentStep < 2) {
             setState(() => _currentStep++);
           } else {
-            // Proceed to payment
+            // Save booking details
             booking.setAddress(_addressController.text);
             booking.setAddressDetails(_addressDetailsController.text);
             booking.setNotes(_notesController.text);
 
+            // ★ Check login BEFORE payment
+            final auth = context.read<AuthProvider>();
+            if (auth.firebaseUser == null) {
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  title: const Row(
+                    children: [
+                      Icon(Icons.lock_outline, color: Color(0xFF1565C0)),
+                      SizedBox(width: 10),
+                      Text('تسجيل الدخول مطلوب'),
+                    ],
+                  ),
+                  content: const Text(
+                      'سجّل دخولك عشان تقدر تأكد الطلب وتدفع.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('لاحقاً'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        Navigator.of(context).pushNamed('/login');
+                      },
+                      child: const Text('تسجيل الدخول'),
+                    ),
+                  ],
+                ),
+              );
+              return;
+            }
+
+            // Logged in → go to payment
             Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const PaymentScreen()),
             );

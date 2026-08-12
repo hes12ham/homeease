@@ -228,39 +228,6 @@ class CartScreen extends StatelessWidget {
                           height: 52,
                           child: ElevatedButton(
                             onPressed: () {
-                              final auth = context.read<AuthProvider>();
-                              if (auth.firebaseUser == null) {
-                                showDialog(
-                                  context: context,
-                                  builder: (ctx) => AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20)),
-                                    title: const Row(
-                                      children: [
-                                        Icon(Icons.lock_outline, color: Color(0xFF1565C0)),
-                                        SizedBox(width: 10),
-                                        Text('تسجيل الدخول مطلوب'),
-                                      ],
-                                    ),
-                                    content: const Text(
-                                        'سجّل دخولك عشان تقدر تأكد الطلب.'),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
-                                        child: const Text('لاحقاً'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.pop(ctx);
-                                          Navigator.of(context).pushNamed('/login');
-                                        },
-                                        child: const Text('تسجيل الدخول'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                                return;
-                              }
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => const BookingScreen(),

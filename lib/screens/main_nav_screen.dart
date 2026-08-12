@@ -27,17 +27,11 @@ class _MainNavScreenState extends State<MainNavScreen> {
     } catch (_) {}
 
     return Scaffold(
+      // ALL tabs accessible - no login blocking
       body: _buildBody(isLoggedIn),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) {
-          // Tabs 1,2,3 require login
-          if (i > 0 && !isLoggedIn) {
-            _showLoginRequired(context);
-            return;
-          }
-          setState(() => _currentIndex = i);
-        },
+        onDestinationSelected: (i) => setState(() => _currentIndex = i),
         destinations: [
           const NavigationDestination(
             icon: Icon(Icons.home_outlined),
@@ -77,29 +71,36 @@ class _MainNavScreenState extends State<MainNavScreen> {
       case 0:
         return const HomeScreen();
       case 1:
-        return isLoggedIn ? const OrdersListScreen() : _loginPrompt();
+        return isLoggedIn ? const OrdersListScreen() : _loginPrompt('شوف طلباتك السابقة والحالية');
       case 2:
-        return isLoggedIn ? const CartScreen() : _loginPrompt();
+        return const CartScreen(); // Cart always accessible
       case 3:
-        return isLoggedIn ? const ProfileScreen() : _loginPrompt();
+        return isLoggedIn ? const ProfileScreen() : _loginPrompt('ادخل على حسابك وعدّل بياناتك');
       default:
         return const HomeScreen();
     }
   }
 
-  Widget _loginPrompt() {
+  Widget _loginPrompt(String message) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.lock_outline, size: 64, color: Color(0xFF1565C0)),
+            Container(
+              width: 80, height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(Icons.lock_outline, size: 40, color: Color(0xFF1565C0)),
+            ),
             const SizedBox(height: 20),
             const Text('سجّل دخولك',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            Text('لازم تسجّل دخولك عشان تقدر تستخدم الخاصية دي',
+            Text(message,
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
                 textAlign: TextAlign.center),
             const SizedBox(height: 24),
@@ -114,38 +115,6 @@ class _MainNavScreenState extends State<MainNavScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showLoginRequired(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
-          children: [
-            Icon(Icons.lock_outline, color: Color(0xFF1565C0)),
-            SizedBox(width: 10),
-            Text('تسجيل الدخول مطلوب'),
-          ],
-        ),
-        content: const Text('لازم تسجّل دخولك الأول عشان تقدر تستخدم الخاصية دي.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('لاحقاً'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-            },
-            child: const Text('تسجيل الدخول'),
-          ),
-        ],
       ),
     );
   }
