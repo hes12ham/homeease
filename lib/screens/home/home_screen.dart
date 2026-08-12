@@ -155,8 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
             SliverToBoxAdapter(
               child: SizedBox(
-                height: 48,
+                height: 50,
                 child: ListView.builder(
+                  clipBehavior: Clip.none,
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _categories.length,
@@ -170,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () => setState(() => _selectedCategory = key),
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4),
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
                           color: isSelected ? color : Colors.white,
                           borderRadius: BorderRadius.circular(25),

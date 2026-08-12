@@ -104,7 +104,11 @@ class _BookingScreenState extends State<BookingScreen> {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        Navigator.of(context).pushNamed('/login');
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const LoginScreen(),
+                          ),
+                        );
                       },
                       child: const Text('تسجيل الدخول'),
                     ),

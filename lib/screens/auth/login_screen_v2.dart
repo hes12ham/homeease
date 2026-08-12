@@ -238,49 +238,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 14),
 
-                  // Role Selection Cards
-                  Row(
-                    children: [
-                      // Client Card
-                      Expanded(
-                        child: _buildRoleCard(
-                          context,
-                          icon: '👤',
-                          label: 'عميل',
-                          subtitle: 'احجز خدمات منزلية',
-                          color: Theme.of(context).colorScheme.primary,
-                          lightColor: const Color(0xFFE3F2FD),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const ClientRegisterScreen(),
-                              ),
-                            );
-                          },
+                  // Register as Client
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      icon: const Text('👤', style: TextStyle(fontSize: 20)),
+                      label: const Text('إنشاء حساب جديد'),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ClientRegisterScreen(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      // Technician Card
-                      Expanded(
-                        child: _buildRoleCard(
-                          context,
-                          icon: '🔧',
-                          label: 'فني',
-                          subtitle: 'انضم كمقدم خدمة',
-                          color: const Color(0xFF00897B),
-                          lightColor: const Color(0xFFE0F2F1),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const TechRegistrationScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 24),
 
