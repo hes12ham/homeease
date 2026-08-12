@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth/login_screen_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../providers/booking_provider.dart';
@@ -106,7 +107,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         Navigator.pop(ctx);
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
+                            builder: (_) => LoginScreen(),
                           ),
                         );
                       },
