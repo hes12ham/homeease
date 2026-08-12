@@ -49,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                     backgroundColor: Colors.white.withOpacity(0.2),
                     child: Text(
                       (user?.name.isNotEmpty == true)
-                          ? (user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '؟')
+                          ? (user?.name.isNotEmpty == true ? (user?.name ?? '?')[0].toUpperCase() : '؟')
                           : '?',
                       style: const TextStyle(
                         fontSize: 32,

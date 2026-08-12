@@ -179,7 +179,7 @@ class _SupportScreenState extends State<SupportScreen> {
 
                         if (auth.firebaseUser == null) return;
                         chat.sendMessage(
-                          userId: auth.firebaseUser!.uid,
+                          userId: auth.firebaseUser?.uid ?? "",
                           message: _msgController.text.trim(),
                           isFromUser: true,
                         );

@@ -30,16 +30,16 @@ class HomeScreen extends StatelessWidget {
     {'id': 'elc_02', 'ar': 'مروحة', 'icon': Icons.mode_fan_off_outlined, 'color': Color(0xFFF57F17)},
     // سباكة
     {'id': 'plb_01', 'ar': 'سباكة عامة', 'icon': Icons.plumbing, 'color': Color(0xFF1565C0)},
-    {'id': 'plb_03', 'ar': 'تسليك مجاري', 'icon': Icons.water_damage_outlined, 'color': Color(0xFF1565C0)},
     {'id': 'plb_02', 'ar': 'دش', 'icon': Icons.satellite_alt, 'color': Color(0xFF1565C0)},
-    // نجارة
+    {'id': 'app_01', 'ar': 'غسالة أطباق', 'icon': Icons.countertops_outlined, 'color': Color(0xFFE65100)},
+    // نجارة وأمان
     {'id': 'crp_01', 'ar': 'نجارة', 'icon': Icons.carpenter, 'color': Color(0xFF5D4037)},
     {'id': 'crp_02', 'ar': 'ألوميتال', 'icon': Icons.window_outlined, 'color': Color(0xFF5D4037)},
-    {'id': 'crp_04', 'ar': 'تركيب مطبخ', 'icon': Icons.countertops_outlined, 'color': Color(0xFF5D4037)},
+    {'id': 'sec_01', 'ar': 'كاميرات مراقبة', 'icon': Icons.videocam_outlined, 'color': Color(0xFF37474F)},
     // تكييف
     {'id': 'ac_01', 'ar': 'صيانة التكييف', 'icon': Icons.ac_unit, 'color': Color(0xFF0097A7)},
     {'id': 'ac_02', 'ar': 'تركيب ونقل تكييف', 'icon': Icons.hvac_outlined, 'color': Color(0xFF0097A7)},
-    {'id': 'ac_03', 'ar': 'شحن فريون', 'icon': Icons.thermostat_outlined, 'color': Color(0xFF0097A7)},
+    {'id': 'pst_01', 'ar': 'مكافحة حشرات', 'icon': Icons.pest_control_outlined, 'color': Color(0xFFC62828)},
   ];
 
   String _getGreeting() {

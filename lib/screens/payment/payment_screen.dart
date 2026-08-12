@@ -324,7 +324,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       // Add loyalty points
       final earnedPoints = loyalty.calculatePointsEarned(cart.total);
       if (auth.firebaseUser != null) {
-        await loyalty.addPoints(auth.firebaseUser!.uid, cart.total);
+        await loyalty.addPoints(auth.firebaseUser?.uid ?? "", cart.total);
       }
 
       cart.clearCart();
