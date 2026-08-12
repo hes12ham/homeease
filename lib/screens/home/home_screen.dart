@@ -141,47 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // ===== EMERGENCY =====
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFD32F2F), Color(0xFFF44336)],
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Row(
-                  children: [
-                    const Text('⚡', style: TextStyle(fontSize: 22)),
-                    const SizedBox(width: 10),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('خدمة طوارئ',
-                              style: TextStyle(color: Colors.white,
-                                  fontWeight: FontWeight.w700, fontSize: 15)),
-                          Text('حجز أولوية خلال ساعة',
-                              style: TextStyle(color: Colors.white70, fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text('احجز الآن',
-                          style: TextStyle(color: Color(0xFFD32F2F),
-                              fontSize: 12, fontWeight: FontWeight.w700)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+
 
             // ===== 4 CATEGORY CHIPS =====
             const SliverToBoxAdapter(
