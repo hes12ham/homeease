@@ -49,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
                     backgroundColor: Colors.white.withOpacity(0.2),
                     child: Text(
                       (user?.name.isNotEmpty == true)
-                          ? user!.name[0].toUpperCase()
+                          ? (user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '؟')
                           : '?',
                       style: const TextStyle(
                         fontSize: 32,
@@ -78,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
                   if (user?.phone.isNotEmpty == true) ...[
                     const SizedBox(height: 2),
                     Text(
-                      user!.phone,
+                      user?.phone ?? '',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 14,
