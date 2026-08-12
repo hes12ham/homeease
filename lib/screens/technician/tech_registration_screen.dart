@@ -860,4 +860,3 @@ class _TechRegistrationBody extends StatelessWidget {
     );
   }
 }
-git add .
