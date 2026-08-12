@@ -265,7 +265,7 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
   Widget _buildOtpScreen() {
     return Scaffold(
       appBar: AppBar(title: const Text('تأكيد رقم الموبايل')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
@@ -300,10 +300,11 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(6, (i) {
-                  return Container(
-                    width: 46,
+                  return Flexible(
+                    child: Container(
+                    constraints: const BoxConstraints(maxWidth: 48),
                     height: 56,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
                     child: TextField(
                       controller: _otpCtrls[i],
                       focusNode: _otpFocus[i],
@@ -334,13 +335,13 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
                         if (v.isEmpty && i > 0) {
                           _otpFocus[i - 1].requestFocus();
                         }
-                        // Auto-submit
                         final code = _otpCtrls.map((c) => c.text).join();
                         if (code.length == 6) {
                           _verifyOtp(code);
                         }
                       },
                     ),
+                  ),
                   );
                 }),
               ),
@@ -458,8 +459,39 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
       return;
     }
 
-    setState(() => _showOtp = true);
-    // In production: trigger Firebase phone auth OTP here
+    // Register directly (OTP requires Firebase Blaze plan)
+    setState(() => _isLoading = true);
+    
+    try {
+      final phone = _phoneCtrl.text.trim();
+      final email = '\$phone@homeservice.app';
+      
+      final success = await context.read<AuthProvider>().registerWithEmail(
+            email: email,
+            password: _passCtrl.text,
+            name: _nameCtrl.text.trim(),
+            phone: phone,
+          );
+
+      if (mounted && success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم إنشاء حسابك بنجاح! 🎉'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const MainNavScreen()),
+          (route) => false,
+        );
+      } else if (mounted) {
+        _showError('الرقم ده مسجّل قبل كده. جرّب سجّل دخول.');
+      }
+    } catch (e) {
+      _showError('حدث خطأ: \$e');
+    }
+    
+    if (mounted) setState(() => _isLoading = false);
   }
 
   void _verifyOtp(String code) async {

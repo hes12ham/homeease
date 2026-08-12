@@ -15,6 +15,44 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final auth = context.watch<AuthProvider>();
+    
+    // Show login prompt if not logged in
+    if (auth.firebaseUser == null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 80, height: 80,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE3F2FD),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Icon(Icons.person_outline, size: 40, color: Color(0xFF1565C0)),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('حسابي', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  Text('سجّل دخولك عشان تشوف بيانات حسابك',
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                      textAlign: TextAlign.center),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.login),
+                    label: const Text('تسجيل الدخول'),
+                    onPressed: () => Navigator.of(context).pushNamed('/login'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     final theme = context.watch<ThemeProvider>();
     final locale = context.watch<LocaleProvider>();
     final loyalty = context.watch<LoyaltyProvider>();

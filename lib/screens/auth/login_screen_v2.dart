@@ -350,8 +350,9 @@ class _LoginScreenState extends State<LoginScreen> {
         if (auth.user?.role == 'technician') {
           // Navigate to technician dashboard
         } else {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const MainNavScreen()),
+            (route) => false,
           );
         }
       }
@@ -363,16 +364,21 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
     try {
-      await context.read<AuthProvider>().signInWithGoogle();
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
+      final success = await context.read<AuthProvider>().signInWithGoogle();
+      if (mounted && success) {
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const MainNavScreen()),
+          (route) => false,
         );
+      } else if (mounted) {
+        _showError('تم إلغاء تسجيل الدخول');
       }
     } catch (e) {
-      _showError('فشل تسجيل الدخول بجوجل');
+      _showError('فشل تسجيل الدخول بجوجل. تأكد من إضافة SHA-1 في Firebase Console.');
     }
+    if (mounted) setState(() => _isLoading = false);
   }
 
   void _showForgotPasswordDialog() {
