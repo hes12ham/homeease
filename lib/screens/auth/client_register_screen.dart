@@ -297,53 +297,40 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
             // OTP Inputs
             Directionality(
               textDirection: TextDirection.ltr,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(6, (i) {
-                  return Flexible(
-                    child: Container(
-                    constraints: const BoxConstraints(maxWidth: 48),
-                    height: 56,
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    child: TextField(
-                      controller: _otpCtrls[i],
-                      focusNode: _otpFocus[i],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      maxLength: 1,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: InputDecoration(
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(6, (i) {
+                    return SizedBox(
+                      width: 44,
+                      height: 52,
+                      child: TextField(
+                        controller: _otpCtrls[i],
+                        focusNode: _otpFocus[i],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        maxLength: 1,
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          contentPadding: EdgeInsets.zero,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: Color(0xFF1565C0), width: 2),
                           ),
                         ),
+                        onChanged: (v) {
+                          if (v.isNotEmpty && i < 5) _otpFocus[i + 1].requestFocus();
+                          if (v.isEmpty && i > 0) _otpFocus[i - 1].requestFocus();
+                          final code = _otpCtrls.map((c) => c.text).join();
+                          if (code.length == 6) _verifyOtp(code);
+                        },
                       ),
-                      onChanged: (v) {
-                        if (v.isNotEmpty && i < 5) {
-                          _otpFocus[i + 1].requestFocus();
-                        }
-                        if (v.isEmpty && i > 0) {
-                          _otpFocus[i - 1].requestFocus();
-                        }
-                        final code = _otpCtrls.map((c) => c.text).join();
-                        if (code.length == 6) {
-                          _verifyOtp(code);
-                        }
-                      },
-                    ),
-                  ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
             const SizedBox(height: 24),

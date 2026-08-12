@@ -106,6 +106,9 @@ class AvailableTechniciansScreen extends StatelessWidget {
                     final experience = data['experience'] ?? '';
                     final rating = (data['rating'] ?? 4.5).toDouble();
                     final completedJobs = data['completedJobs'] ?? 0;
+                    final age = data['age'] ?? '';
+                    final address = data['address'] ?? data['governorate'] ?? '';
+                    final photoUrl = data['profilePhotoUrl'] as String?;
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
@@ -122,10 +125,13 @@ class AvailableTechniciansScreen extends StatelessWidget {
                               children: [
                                 // Avatar
                                 CircleAvatar(
-                                  radius: 28,
-                                  backgroundColor: const Color(0xFF1565C0),
-                                  child: Text(techName.isNotEmpty ? techName[0] : '?',
-                                      style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                                  radius: 30,
+                                  backgroundColor: const Color(0xFFE3F2FD),
+                                  backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+                                  child: photoUrl == null
+                                      ? Text(techName.isNotEmpty ? techName[0] : '?',
+                                          style: const TextStyle(color: Color(0xFF1565C0), fontSize: 22, fontWeight: FontWeight.bold))
+                                      : null,
                                 ),
                                 const SizedBox(width: 14),
                                 // Info
