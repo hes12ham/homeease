@@ -119,7 +119,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (_) => const MainNavScreen(initialIndex: 0),
+                          builder: (_) => const MainNavScreen(),
                         ),
                             (route) => false,
                       );
