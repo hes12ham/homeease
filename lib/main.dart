@@ -16,14 +16,17 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase safely
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    debugPrint('✅ Firebase initialized successfully');
   } catch (e) {
-    debugPrint('Firebase init error: $e');
+    debugPrint('⚠️ Firebase init error: $e');
   }
 
+  // Load saved preferences
   final themeProvider = ThemeProvider();
   await themeProvider.loadTheme();
 

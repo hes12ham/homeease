@@ -30,7 +30,8 @@ class AuthProvider extends ChangeNotifier {
     _firebaseUser = user;
     if (user != null) {
       await _loadUserData(user.uid);
-      await _updateFCMToken();
+      // FCM token update - non-critical, don't crash if fails
+      try { await _updateFCMToken(); } catch (_) {}
     } else {
       _user = null;
     }

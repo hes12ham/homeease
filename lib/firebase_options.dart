@@ -1,18 +1,12 @@
-// ============================================================
-// GENERATED FILE — DO NOT EDIT MANUALLY
-// Replace this file by running:
-//   flutterfire configure
-//
-// This placeholder allows the project to compile.
-// You MUST replace with real values from Firebase Console.
-// ============================================================
-
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
+    if (kIsWeb) {
+      return web;
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
@@ -23,22 +17,29 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // TODO: Replace with your actual Firebase project values
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: 'YOUR_ANDROID_APP_ID',
-    messagingSenderId: 'YOUR_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDummy-replace-if-needed',
+    appId: '1:796568810415:android:c45d04c6c259ea846bb55a',
+    messagingSenderId: '796568810415',
+    projectId: 'homeease-cf79b',
+    storageBucket: 'homeease-cf79b.firebasestorage.app',
   );
 
-  // TODO: Replace with your actual Firebase project values
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDummy-replace-if-needed',
+    appId: '1:796568810415:web:9a49d5795d4d2e396bb55a',
+    messagingSenderId: '796568810415',
+    projectId: 'homeease-cf79b',
+    storageBucket: 'homeease-cf79b.firebasestorage.app',
+    authDomain: 'homeease-cf79b.firebaseapp.com',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: 'YOUR_IOS_APP_ID',
-    messagingSenderId: 'YOUR_SENDER_ID',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.appspot.com',
+    apiKey: 'AIzaSyDummy-replace-if-needed',
+    appId: '1:796568810415:ios:0000000000000000',
+    messagingSenderId: '796568810415',
+    projectId: 'homeease-cf79b',
+    storageBucket: 'homeease-cf79b.firebasestorage.app',
     iosBundleId: 'com.homeease.app',
   );
 }
