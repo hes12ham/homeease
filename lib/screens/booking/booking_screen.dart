@@ -7,6 +7,7 @@ import '../../providers/cart_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../payment/payment_screen.dart';
+import 'available_technicians_screen.dart';
 import '../map/address_picker_screen.dart';
 
 class BookingScreen extends StatefulWidget {
@@ -119,9 +120,24 @@ class _BookingScreenState extends State<BookingScreen> {
               return;
             }
 
-            // Logged in → go to payment
+            // Logged in → show available technicians
+            final cartItems = context.read<CartProvider>().items;
+            final firstItem = cartItems.isNotEmpty ? cartItems.first : null;
+            
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PaymentScreen()),
+              MaterialPageRoute(
+                builder: (_) => AvailableTechniciansScreen(
+                  category: firstItem?.category ?? 'electrical',
+                  categoryName: firstItem?.nameAr ?? 'خدمة',
+                  serviceName: firstItem?.nameAr ?? 'خدمة',
+                  serviceId: firstItem?.serviceId ?? '',
+                  basePrice: firstItem?.price ?? 0,
+                  address: _addressController.text,
+                  city: _addressController.text.split('،').first.trim(),
+                  date: booking.selectedDate ?? DateTime.now(),
+                  timeSlot: booking.selectedTimeSlot ?? '',
+                ),
+              ),
             );
           }
         },
