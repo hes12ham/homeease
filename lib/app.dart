@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/splash_screen.dart';
 import 'screens/auth/role_selection_screen.dart';
 import 'screens/auth/login_screen_v2.dart';
@@ -25,6 +26,7 @@ class HomeServiceApp extends StatelessWidget {
       locale: localeProvider.locale,
       supportedLocales: const [Locale('ar'), Locale('en')],
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

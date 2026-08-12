@@ -6,7 +6,8 @@ class AppLocalizations {
   AppLocalizations(this.locale);
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+    return Localizations.of<AppLocalizations>(context, AppLocalizations) 
+        ?? AppLocalizations(const Locale('ar'));
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
