@@ -12,6 +12,7 @@ import 'providers/locale_provider.dart';
 import 'providers/loyalty_provider.dart';
 import 'providers/chat_provider.dart';
 import 'app.dart';
+import 'utils/seed_test_technicians.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

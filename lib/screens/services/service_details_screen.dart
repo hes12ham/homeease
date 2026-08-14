@@ -201,7 +201,7 @@ class ServiceDetailsScreen extends StatelessWidget {
                   ),
                   _buildIncluded(
                     Icons.verified_user,
-                    isArabic ? 'ضمان شهر كامل' : '1 Month Full Warranty',
+                    isArabic ? 'ضمان أسبوع' : '7-Day Warranty',
                     isArabic: isArabic,
                   ),
                   _buildIncluded(

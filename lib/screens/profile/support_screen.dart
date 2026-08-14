@@ -357,7 +357,7 @@ class _SupportScreenState extends State<SupportScreen> {
             _faqItem('How do I book a service?',
                 'Browse services from the home screen, add to cart, choose date/time and address, then confirm payment.'),
             _faqItem('What is the warranty policy?',
-                'All services include a 30-day warranty. If you experience any issues, contact support or submit a warranty claim.'),
+                'All services include a 7-day warranty. If you experience any issues, contact support or submit a warranty claim.'),
             _faqItem('How do loyalty points work?',
                 'You earn 1 point for every EGP spent. 100 points = 1 EGP discount. Maximum 20% discount per order.'),
             _faqItem('Can I cancel a booking?',

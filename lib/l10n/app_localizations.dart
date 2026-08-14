@@ -256,7 +256,7 @@ class AppLocalizations {
       'service_details': 'تفاصيل الخدمة',
       'price': 'السعر',
       'warranty': 'الضمان',
-      'warranty_info': 'ضمان شهر واحد مجاناً',
+      'warranty_info': 'ضمان أسبوع مجاناً',
       'add_to_cart': 'أضف إلى السلة',
       'added_to_cart': 'تمت الإضافة!',
       'book_now': 'احجز الآن',

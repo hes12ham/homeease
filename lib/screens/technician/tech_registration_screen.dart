@@ -446,7 +446,6 @@ class _TechRegistrationBody extends StatelessWidget {
                 ),
               const SizedBox(height: 12),
               _reviewRow('الاسم', reg.fullNameController.text),
-              _reviewRow('السن', reg.ageController.text),
               _reviewRow('الموبايل', reg.phoneController.text),
               _reviewRow('العنوان', reg.addressController.text),
               _reviewRow('المحافظة', reg.governorate),
@@ -455,10 +454,7 @@ class _TechRegistrationBody extends StatelessWidget {
                 reg.selectedSpecs.map((s) => specs[s] ?? s).join('، '),
               ),
               _reviewRow('الخبرة', '${reg.experienceController.text} سنة'),
-              _reviewRow(
-                'المؤهل',
-                TechnicianApplication.educationLabel(reg.education),
-              ),
+
               _reviewRow('نبذة', reg.bioController.text),
               const SizedBox(height: 12),
               Row(
@@ -466,7 +462,7 @@ class _TechRegistrationBody extends StatelessWidget {
                 children: [
                   _docThumb('البطاقة أمام', reg.idFront),
                   _docThumb('البطاقة خلف', reg.idBack),
-                  _docThumb('الفيش', reg.criminalRecord),
+
                 ],
               ),
             ],
