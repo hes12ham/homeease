@@ -13,7 +13,6 @@ class TechRegistrationProvider extends ChangeNotifier {
 
   // Step 1: Personal Info
   final fullNameController = TextEditingController();
-  final ageController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   String _governorate = 'القاهرة';
@@ -22,13 +21,11 @@ class TechRegistrationProvider extends ChangeNotifier {
   final List<String> _selectedSpecs = [];
   final experienceController = TextEditingController(text: '1');
   final bioController = TextEditingController();
-  EducationLevel _education = EducationLevel.secondary;
 
   // Step 3: Documents
   File? _profilePhoto;
   File? _idFront;
   File? _idBack;
-  File? _criminalRecord;
 
   // Step 4: Agreement
   bool _agreeTerms = false;
@@ -41,11 +38,9 @@ class TechRegistrationProvider extends ChangeNotifier {
   TechnicianStatus? get applicationStatus => _applicationStatus;
   String get governorate => _governorate;
   List<String> get selectedSpecs => _selectedSpecs;
-  EducationLevel get education => _education;
   File? get profilePhoto => _profilePhoto;
   File? get idFront => _idFront;
   File? get idBack => _idBack;
-  File? get criminalRecord => _criminalRecord;
   bool get agreeTerms => _agreeTerms;
   bool get agreeDataCorrect => _agreeDataCorrect;
 
@@ -82,10 +77,7 @@ class TechRegistrationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setEducation(EducationLevel edu) {
-    _education = edu;
-    notifyListeners();
-  }
+
 
   void setAgreeTerms(bool v) {
     _agreeTerms = v;
@@ -127,7 +119,6 @@ class TechRegistrationProvider extends ChangeNotifier {
   Future<void> pickCriminalRecord() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1200);
     if (picked != null) {
-      _criminalRecord = File(picked.path);
       notifyListeners();
     }
   }
@@ -148,16 +139,12 @@ class TechRegistrationProvider extends ChangeNotifier {
   }
 
   void removeCriminalRecord() {
-    _criminalRecord = null;
     notifyListeners();
   }
 
   // Validation
   String? validateStep1() {
     if (fullNameController.text.trim().isEmpty) return 'الاسم مطلوب';
-    if (ageController.text.trim().isEmpty) return 'السن مطلوب';
-    final age = int.tryParse(ageController.text) ?? 0;
-    if (age < 18 || age > 65) return 'السن لازم يكون بين ١٨ و ٦٥';
     if (phoneController.text.trim().isEmpty) return 'رقم الموبايل مطلوب';
     if (phoneController.text.trim().length < 10) return 'رقم الموبايل غير صحيح';
     if (addressController.text.trim().isEmpty) return 'العنوان مطلوب';
@@ -174,7 +161,6 @@ class TechRegistrationProvider extends ChangeNotifier {
     if (_profilePhoto == null) return 'الصورة الشخصية مطلوبة';
     if (_idFront == null) return 'صورة البطاقة (أمام) مطلوبة';
     if (_idBack == null) return 'صورة البطاقة (خلف) مطلوبة';
-    if (_criminalRecord == null) return 'صورة الفيش والتشبيه مطلوبة';
     return null;
   }
 
@@ -210,28 +196,25 @@ class TechRegistrationProvider extends ChangeNotifier {
         _idBack!,
         'technicians/$userId/id_back.jpg',
       );
-      final criminalUrl = await _uploadFile(
-        _criminalRecord!,
-        'technicians/$userId/criminal_record.jpg',
-      );
+      const criminalUrl = '';
 
       // Create application document
       final application = TechnicianApplication(
         id: '',
         userId: userId,
         fullName: fullNameController.text.trim(),
-        age: int.parse(ageController.text),
+
         phone: phoneController.text.trim(),
         address: addressController.text.trim(),
         governorate: _governorate,
         specializations: _selectedSpecs,
         yearsOfExperience: int.tryParse(experienceController.text) ?? 1,
         bio: bioController.text.trim(),
-        education: _education,
+
         profilePhotoUrl: profileUrl,
         idFrontUrl: idFrontUrl,
         idBackUrl: idBackUrl,
-        criminalRecordUrl: criminalUrl,
+
         status: TechnicianStatus.pending,
         createdAt: DateTime.now(),
       );
@@ -280,7 +263,6 @@ class TechRegistrationProvider extends ChangeNotifier {
   @override
   void dispose() {
     fullNameController.dispose();
-    ageController.dispose();
     phoneController.dispose();
     addressController.dispose();
     experienceController.dispose();

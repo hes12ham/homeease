@@ -257,30 +257,8 @@ class _TechRegistrationBody extends StatelessWidget {
           controller: reg.experienceController,
           label: 'سنوات الخبرة',
           icon: Icons.work_outline,
-          hint: 'مثال: ٥',
-          keyboardType: TextInputType.number,
-        ),
         const SizedBox(height: 16),
-        const Text('المؤهل الدراسي',
-            style: TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        ...EducationLevel.values.map((edu) {
-          return RadioListTile<EducationLevel>(
-            value: edu,
-            groupValue: reg.education,
-            onChanged: (v) => reg.setEducation(v!),
-            title: Text(
-              TechnicianApplication.educationLabel(edu),
-              style: const TextStyle(fontSize: 14),
-            ),
-            dense: true,
-            contentPadding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          );
-        }),
-        const SizedBox(height: 16),
+
         const Text('نبذة عنك', style: TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         TextField(
@@ -348,17 +326,7 @@ class _TechRegistrationBody extends StatelessWidget {
         ),
         const SizedBox(height: 20),
 
-        // Criminal Record
-        _uploadField(
-          context,
-          label: 'صورة الفيش والتشبيه',
-          icon: Icons.description_outlined,
-          file: reg.criminalRecord,
-          onPick: reg.pickCriminalRecord,
-          onRemove: reg.removeCriminalRecord,
-        ),
 
-        const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
