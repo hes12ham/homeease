@@ -164,14 +164,6 @@ class _TechRegistrationBody extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _inputField(
-          controller: reg.ageController,
-          label: 'السن',
-          icon: Icons.cake_outlined,
-          hint: 'مثال: ٣٠',
-          keyboardType: TextInputType.number,
-        ),
-        const SizedBox(height: 16),
-        _inputField(
           controller: reg.phoneController,
           label: 'رقم الموبايل',
           icon: Icons.phone_outlined,
@@ -216,12 +208,8 @@ class _TechRegistrationBody extends StatelessWidget {
     final specs = {
       'plumbing': {'ar': 'سباكة', 'icon': '🔧'},
       'electrical': {'ar': 'كهرباء', 'icon': '⚡'},
-      'cleaning': {'ar': 'تنظيف', 'icon': '🧹'},
-      'painting': {'ar': 'دهانات', 'icon': '🎨'},
       'carpentry': {'ar': 'نجارة', 'icon': '🪚'},
       'ac': {'ar': 'تكييف', 'icon': '❄️'},
-      'appliances': {'ar': 'أجهزة', 'icon': '🔌'},
-      'pest_control': {'ar': 'مكافحة حشرات', 'icon': '🐛'},
     };
 
     return Column(
@@ -402,12 +390,8 @@ class _TechRegistrationBody extends StatelessWidget {
     final specs = {
       'plumbing': 'سباكة',
       'electrical': 'كهرباء',
-      'cleaning': 'تنظيف',
-      'painting': 'دهانات',
       'carpentry': 'نجارة',
       'ac': 'تكييف',
-      'appliances': 'أجهزة',
-      'pest_control': 'مكافحة حشرات',
     };
 
     return Column(

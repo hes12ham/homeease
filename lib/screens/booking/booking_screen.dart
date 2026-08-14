@@ -66,20 +66,20 @@ class _BookingScreenState extends State<BookingScreen> {
       body: Stepper(
         currentStep: _currentStep,
         onStepContinue: () {
-          if (_currentStep == 1 && booking.selectedDate == null) {
+          if (_currentStep == 0 && booking.selectedDate == null) {
             _showError('Please select a date');
             return;
           }
-          if (_currentStep == 2 && booking.selectedTimeSlot == null) {
+          if (_currentStep == 1 && booking.selectedTimeSlot == null) {
             _showError('Please select a time slot');
             return;
           }
-          if (_currentStep == 3 && _addressController.text.isEmpty) {
+          if (_currentStep == 2 && _addressController.text.isEmpty) {
             _showError('Please enter your address');
             return;
           }
 
-          if (_currentStep < 3) {
+          if (_currentStep < 2) {
             setState(() => _currentStep++);
           } else {
             // Save booking details
