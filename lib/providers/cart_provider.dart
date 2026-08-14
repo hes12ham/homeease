@@ -24,6 +24,7 @@ class CartProvider extends ChangeNotifier {
         serviceId: service.id,
         nameEn: service.nameEn,
         nameAr: service.nameAr,
+        category: service.category,
         price: service.price,
       ));
     }
