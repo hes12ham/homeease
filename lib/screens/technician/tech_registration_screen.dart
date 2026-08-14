@@ -257,6 +257,8 @@ class _TechRegistrationBody extends StatelessWidget {
           controller: reg.experienceController,
           label: 'سنوات الخبرة',
           icon: Icons.work_outline,
+          hint: 'مثال: ٥ سنوات',
+        ),
         const SizedBox(height: 16),
 
         const Text('نبذة عنك', style: TextStyle(fontWeight: FontWeight.w600)),
