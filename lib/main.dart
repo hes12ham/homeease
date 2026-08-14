@@ -17,20 +17,27 @@ import 'utils/seed_test_technicians.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // 1. Initialize Firebase
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    debugPrint('✅ Firebase initialized');
+
+    // 2. Seed test technicians (runs once)
+    await TestDataSeeder.seedTechnicians();
   } catch (e) {
-    debugPrint('Firebase init error: $e');
+    debugPrint('⚠️ Firebase/Seed error: $e');
   }
 
+  // 3. Load preferences
   final themeProvider = ThemeProvider();
   try { await themeProvider.loadTheme(); } catch (_) {}
 
   final localeProvider = LocaleProvider();
   try { await localeProvider.loadLocale(); } catch (_) {}
 
+  // 4. Run app
   runApp(
     MultiProvider(
       providers: [
