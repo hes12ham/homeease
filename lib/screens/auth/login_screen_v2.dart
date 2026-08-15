@@ -4,6 +4,7 @@ import '../../providers/auth_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
 import '../main_nav_screen.dart';
+import '../technician/tech_main_screen.dart';
 import 'client_register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -347,7 +348,10 @@ class _LoginScreenState extends State<LoginScreen> {
         // Route based on user role
         final auth = context.read<AuthProvider>();
         if (auth.user?.role == 'technician') {
-          // Navigate to technician dashboard
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const TechMainScreen()),
+            (route) => false,
+          );
         } else {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const MainNavScreen()),
@@ -367,8 +371,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final success = await context.read<AuthProvider>().signInWithGoogle();
       if (mounted && success) {
+        final role = context.read<AuthProvider>().user?.role;
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const MainNavScreen()),
+          MaterialPageRoute(builder: (_) => role == 'technician'
+              ? const TechMainScreen()
+              : const MainNavScreen()),
           (route) => false,
         );
       } else if (mounted) {

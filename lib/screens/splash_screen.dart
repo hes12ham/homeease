@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'technician/tech_main_screen.dart';
+import 'main_nav_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -36,11 +38,23 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     
-    // If already logged in, go straight to home
+    // If already logged in, route based on role
     try {
       final auth = context.read<AuthProvider>();
       if (auth.firebaseUser != null) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        // Wait for user data to load
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return;
+        
+        if (auth.user?.role == 'technician') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const TechMainScreen()),
+          );
+        } else {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MainNavScreen()),
+          );
+        }
         return;
       }
     } catch (_) {}
