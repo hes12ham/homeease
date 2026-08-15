@@ -50,7 +50,8 @@ class CartProvider extends ChangeNotifier {
       final cartString = prefs.getString('saved_cart');
       if (cartString != null) {
         final List<dynamic> cartList = json.decode(cartString);
-        _items = cartList.map((item) => CartItem.fromMap(item as Map<String, dynamic>)).toList();
+        _items.clear();
+        _items.addAll(cartList.map((item) => CartItem.fromMap(item as Map<String, dynamic>)).toList();
         notifyListeners();
       }
     } catch (_) {}

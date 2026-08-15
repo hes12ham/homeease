@@ -533,7 +533,7 @@ class _TechRegistrationBody extends StatelessWidget {
     );
   }
 
-  void _handleNext(BuildContext context, TechRegistrationProvider reg) {
+  Future<void> _handleNext(BuildContext context, TechRegistrationProvider reg) {
     String? error;
     switch (reg.currentStep) {
       case 0:
