@@ -26,7 +26,7 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final auth = context.read<AuthProvider>();
         if (auth.firebaseUser != null) {
-          context.read<BookingProvider>().loadUserBookings(auth.firebaseUser?.uid ?? "");
+          context.read<BookingProvider>().loadUserBookings(auth.firebaseUser!.uid);
         }
       });
     }
@@ -35,7 +35,7 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
   Future<void> _refreshOrders() async {
     final auth = context.read<AuthProvider>();
     if (auth.firebaseUser != null) {
-      await context.read<BookingProvider>().loadUserBookings(auth.firebaseUser?.uid ?? "");
+      await context.read<BookingProvider>().loadUserBookings(auth.firebaseUser!.uid);
     }
   }
 

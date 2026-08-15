@@ -19,7 +19,6 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
   bool _obscure2 = true;
   bool _agreeTerms = false;
   bool _isLoading = false;
-  bool _showOtp = false;
   final List<TextEditingController> _otpCtrls =
       List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _otpFocus = List.generate(6, (_) => FocusNode());
@@ -68,7 +67,6 @@ class _ClientRegisterScreenState extends State<ClientRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_showOtp) return _buildOtpScreen();
 
     return Scaffold(
       appBar: AppBar(

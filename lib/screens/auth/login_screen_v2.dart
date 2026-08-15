@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../providers/locale_provider.dart';
 import '../main_nav_screen.dart';
 import 'client_register_screen.dart';
-import '../technician/tech_registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
