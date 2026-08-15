@@ -208,11 +208,20 @@ class TechRegistrationProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      // Send WhatsApp notification
+      // Send WhatsApp to technician
       try {
         await _sendWhatsAppNotification(
           phone: phoneController.text.trim(),
           name: fullNameController.text.trim(),
+        );
+      } catch (_) {}
+
+      // Notify admin via WhatsApp
+      try {
+        await _notifyAdmin(
+          techName: fullNameController.text.trim(),
+          techPhone: phoneController.text.trim(),
+          specs: _selectedSpecs.join(', '),
         );
       } catch (_) {}
 

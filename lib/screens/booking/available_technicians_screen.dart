@@ -33,12 +33,19 @@ class AvailableTechniciansScreen extends StatefulWidget {
   });
 
   @override
-  State<AvailableTechniciansScreen> createState() => _AvailableTechniciansScreenState();
+  State<AvailableTechniciansScreen> createState() => _State();
 }
 
-class _AvailableTechniciansScreenState extends State<AvailableTechniciansScreen> {
-  String? _acceptedTechId;
-  bool _isRequesting = false;
+class _State extends State<AvailableTechniciansScreen> {
+  late double _offerPrice;
+  String? _sentToTechId;
+  bool _isSending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _offerPrice = widget.basePrice;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,74 +56,123 @@ class _AvailableTechniciansScreenState extends State<AvailableTechniciansScreen>
           children: [
             // Top bar
             Container(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
               color: Colors.white,
               child: Row(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.pop(context),
-                  ),
+                  IconButton(icon: const Icon(Icons.arrow_back),
+                      onPressed: () => Navigator.pop(context)),
                   Expanded(
                     child: Column(
                       children: [
                         Text(widget.serviceName,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-                        Text('${widget.basePrice.toStringAsFixed(0)} ج.م · ${widget.timeSlot}',
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                        Text(widget.timeSlot,
+                            style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text('${widget.basePrice.toStringAsFixed(0)} ج.م',
-                        style: const TextStyle(color: Color(0xFF2E7D32), fontWeight: FontWeight.w700)),
                   ),
                 ],
               ),
             ),
 
-            // Problem description card (if provided)
+            // Price adjustment section
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+              ),
+              child: Column(
+                children: [
+                  const Text('حدد سعرك', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Minus button
+                      _priceButton(Icons.remove, () {
+                        if (_offerPrice > 50) setState(() => _offerPrice -= 10);
+                      }),
+                      // Price display
+                      GestureDetector(
+                        onTap: () => _editPriceManually(),
+                        child: Container(
+                          width: 140,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F7FA),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFFE0E4E8)),
+                          ),
+                          child: Column(
+                            children: [
+                              Text('${_offerPrice.toStringAsFixed(0)}',
+                                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Color(0xFF2E7D32))),
+                              Text('ج.م', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Plus button
+                      _priceButton(Icons.add, () {
+                        setState(() => _offerPrice += 10);
+                      }),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text('السعر الأساسي: ${widget.basePrice.toStringAsFixed(0)} ج.م',
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
+                  // Quick price buttons
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      _quickPrice(widget.basePrice),
+                      _quickPrice(widget.basePrice + 50),
+                      _quickPrice(widget.basePrice + 100),
+                      _quickPrice(widget.basePrice + 150),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Problem description
             if (widget.problemDescription != null && widget.problemDescription!.isNotEmpty)
               Container(
-                margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF3E0),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.description, color: Color(0xFFE65100), size: 20),
+                    const Icon(Icons.description, color: Color(0xFFE65100), size: 18),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(widget.problemDescription!,
-                          style: const TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    ),
+                    Expanded(child: Text(widget.problemDescription!,
+                        style: const TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis)),
                   ],
                 ),
               ),
 
-            // Header
+            // Technicians header
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: Row(
                 children: [
-                  const Text('الفنيين المتاحين',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  const Text('اختار الفني', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                   const Spacer(),
-                  Icon(Icons.sort, size: 18, color: Colors.grey.shade500),
-                  const SizedBox(width: 4),
-                  Text('الأقرب', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                  Text('اضغط "أرسل عرض" للفني', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
                 ],
               ),
             ),
 
-            // Technicians list (InDrive style)
+            // Technicians list
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -128,31 +184,25 @@ class _AvailableTechniciansScreenState extends State<AvailableTechniciansScreen>
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
                   final techs = snapshot.data?.docs ?? [];
-
                   if (techs.isEmpty) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.person_search, size: 64, color: Colors.grey.shade300),
-                          const SizedBox(height: 16),
-                          const Text('لا يوجد فنيين متاحين حالياً',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 8),
-                          Text('جرّب تاني بعد شوية', style: TextStyle(color: Colors.grey.shade500)),
+                          Icon(Icons.person_search, size: 56, color: Colors.grey.shade300),
+                          const SizedBox(height: 12),
+                          const Text('لا يوجد فنيين متاحين', style: TextStyle(fontWeight: FontWeight.w600)),
                         ],
                       ),
                     );
                   }
-
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: techs.length,
                     itemBuilder: (context, index) {
                       final data = techs[index].data() as Map<String, dynamic>;
-                      return _buildTechCard(context, techs[index].id, data);
+                      return _techCard(techs[index].id, data);
                     },
                   );
                 },
@@ -164,134 +214,157 @@ class _AvailableTechniciansScreenState extends State<AvailableTechniciansScreen>
     );
   }
 
-  // InDrive-style technician card
-  Widget _buildTechCard(BuildContext context, String techId, Map<String, dynamic> data) {
-    final name = data['fullName'] ?? 'فني';
-    final rating = (data['rating'] ?? 4.5).toDouble();
-    final jobs = data['completedJobs'] ?? 0;
-    final address = data['address'] ?? data['city'] ?? '';
-    final experience = data['experience'] ?? '';
-    final photoUrl = data['profilePhotoUrl'] as String?;
-    final isAccepted = _acceptedTechId == techId;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isAccepted ? const Color(0xFFE8F5E9) : Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: isAccepted ? Border.all(color: Colors.green, width: 2) : null,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
+  Widget _priceButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1565C0),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
       ),
-      child: Row(
-        children: [
-          // Photo
-          CircleAvatar(
-            radius: 26,
-            backgroundColor: const Color(0xFFE3F2FD),
-            backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-            child: photoUrl == null
-                ? Text(name.isNotEmpty ? name[0] : '?',
-                    style: const TextStyle(color: Color(0xFF1565C0), fontSize: 20, fontWeight: FontWeight.bold))
-                : null,
-          ),
-          const SizedBox(width: 12),
+    );
+  }
 
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
-                    Text(' ${rating.toStringAsFixed(1)}', style: const TextStyle(fontSize: 12)),
-                    Text(' ($jobs)', style: TextStyle(fontSize: 11, color: Colors.grey.shade500)),
-                  ],
-                ),
-                if (address.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.location_on, size: 12, color: Colors.grey.shade400),
-                        const SizedBox(width: 2),
-                        Flexible(
-                          child: Text(address,
-                              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ),
+  Widget _quickPrice(double price) {
+    final isSelected = _offerPrice == price;
+    return GestureDetector(
+      onTap: () => setState(() => _offerPrice = price),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF1565C0) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? const Color(0xFF1565C0) : const Color(0xFFE0E4E8)),
+        ),
+        child: Text('${price.toStringAsFixed(0)}',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.grey.shade700)),
+      ),
+    );
+  }
 
-          // Price + buttons
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Price
-              Text('${widget.basePrice.toStringAsFixed(0)}',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF2E7D32))),
-              Text('ج.م', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
-              const SizedBox(height: 8),
-              // Accept / Decline buttons
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Decline
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.red.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text('رفض', style: TextStyle(color: Colors.red.shade700, fontSize: 12, fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Accept
-                  GestureDetector(
-                    onTap: _isRequesting ? null : () => _acceptTech(context, techId, data),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isAccepted ? Colors.green : const Color(0xFF2E7D32),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: _isRequesting && _acceptedTechId == techId
-                          ? const SizedBox(width: 16, height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : Text(isAccepted ? 'تم ✓' : 'قبول',
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+  void _editPriceManually() {
+    final ctrl = TextEditingController(text: _offerPrice.toStringAsFixed(0));
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('أدخل السعر'),
+        content: TextField(
+          controller: ctrl,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: InputDecoration(
+            suffixText: 'ج.م',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+          ElevatedButton(
+            onPressed: () {
+              final p = double.tryParse(ctrl.text);
+              if (p != null && p > 0) setState(() => _offerPrice = p);
+              Navigator.pop(ctx);
+            },
+            child: const Text('تأكيد'),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _acceptTech(BuildContext context, String techId, Map<String, dynamic> data) async {
+  Widget _techCard(String techId, Map<String, dynamic> data) {
+    final name = data['fullName'] ?? 'فني';
+    final rating = (data['rating'] ?? 4.5).toDouble();
+    final jobs = data['completedJobs'] ?? 0;
+    final address = data['address'] ?? data['city'] ?? '';
+    final isSent = _sentToTechId == techId;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isSent ? const Color(0xFFE8F5E9) : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: isSent ? Border.all(color: Colors.green, width: 1.5) : null,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: const Color(0xFFE3F2FD),
+            child: Text(name.isNotEmpty ? name[0] : '?',
+                style: const TextStyle(color: Color(0xFF1565C0), fontSize: 18, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                Row(
+                  children: [
+                    const Icon(Icons.star, size: 13, color: Color(0xFFF59E0B)),
+                    Text(' ${rating.toStringAsFixed(1)} ($jobs)',
+                        style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                  ],
+                ),
+                if (address.isNotEmpty)
+                  Row(
+                    children: [
+                      Icon(Icons.location_on, size: 11, color: Colors.grey.shade400),
+                      Flexible(child: Text(' $address',
+                          style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+                          overflow: TextOverflow.ellipsis)),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          // Send offer button
+          GestureDetector(
+            onTap: isSent || _isSending ? null : () => _sendOffer(techId, data),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSent ? Colors.green : const Color(0xFF1565C0),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: _isSending && _sentToTechId == techId
+                  ? const SizedBox(width: 16, height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : Column(
+                      children: [
+                        Text(isSent ? 'تم ✓' : 'أرسل عرض',
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
+                        if (!isSent)
+                          Text('${_offerPrice.toStringAsFixed(0)} ج.م',
+                              style: const TextStyle(color: Colors.white70, fontSize: 10)),
+                      ],
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendOffer(String techId, Map<String, dynamic> data) async {
     final auth = context.read<AuthProvider>();
     if (auth.firebaseUser == null) {
       Navigator.of(context).pushNamed('/login');
       return;
     }
 
-    setState(() { _isRequesting = true; _acceptedTechId = techId; });
+    setState(() { _isSending = true; _sentToTechId = techId; });
 
     try {
-      final fees = BookingRequest.calculateFees(widget.basePrice);
+      final fees = BookingRequest.calculateFees(_offerPrice);
 
       await FirebaseFirestore.instance.collection('booking_requests').add({
         'clientId': auth.firebaseUser!.uid,
@@ -308,62 +381,33 @@ class _AvailableTechniciansScreenState extends State<AvailableTechniciansScreen>
         'date': Timestamp.fromDate(widget.date),
         'timeSlot': widget.timeSlot,
         'problemDescription': widget.problemDescription ?? '',
-        'problemImagePath': widget.problemImagePath ?? '',
         'basePrice': widget.basePrice,
-        'agreedPrice': widget.basePrice,
+        'offerPrice': _offerPrice,
+        'agreedPrice': null,
         'appFee': fees['appFee'],
         'techReceives': fees['techReceives'],
-        'status': 'confirmed',
+        'status': 'pending_tech_response',
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.check_circle, color: Colors.green, size: 64),
-                const SizedBox(height: 16),
-                const Text('تم تأكيد الطلب! ✅',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                    textAlign: TextAlign.center),
-                const SizedBox(height: 8),
-                Text('الفني ${data['fullName']} هيتواصل معاك قريب',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                    textAlign: TextAlign.center),
-                const SizedBox(height: 6),
-                Text('السعر: ${widget.basePrice.toStringAsFixed(0)} ج.م',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('نسبة التطبيق: ${fees['appFee']?.toStringAsFixed(0)} ج.م (10%)',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    child: const Text('تم'),
-                  ),
-                ),
-              ],
-            ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تم إرسال عرض ${_offerPrice.toStringAsFixed(0)} ج.م للفني ${data['fullName']}'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('حصل خطأ: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('خطأ: $e'), backgroundColor: Colors.red),
         );
       }
     }
 
-    setState(() => _isRequesting = false);
+    setState(() => _isSending = false);
   }
 }
