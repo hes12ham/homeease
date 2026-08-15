@@ -326,18 +326,18 @@ class TechRegistrationProvider extends ChangeNotifier {
     experienceController.dispose();
     bioController.dispose();
     super.dispose();
+  }
 
   // ===== ADMIN PHONE — غيّر الرقم ده لرقمك =====
-  static const String _adminPhone = '01000000000';
+  final String _adminPhone = '01000000000';
 
-  static String _formatPhone(String phone) {
+  String _formatPhone(String phone) {
     phone = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (phone.startsWith('0')) phone = '2$phone';
     if (!phone.startsWith('20')) phone = '20$phone';
     return phone;
   }
 
-  }
 
   Future<void> _sendWhatsAppNotification({required String phone, required String name}) async {
     final msg = Uri.encodeComponent(
