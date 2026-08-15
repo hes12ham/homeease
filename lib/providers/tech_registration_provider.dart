@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -325,5 +326,40 @@ class TechRegistrationProvider extends ChangeNotifier {
     experienceController.dispose();
     bioController.dispose();
     super.dispose();
+
+  // ===== ADMIN PHONE — غيّر الرقم ده لرقمك =====
+  static const String _adminPhone = '01000000000';
+
+  static String _formatPhone(String phone) {
+    phone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (phone.startsWith('0')) phone = '2$phone';
+    if (!phone.startsWith('20')) phone = '20$phone';
+    return phone;
+  }
+
+  }
+
+  Future<void> _sendWhatsAppNotification({required String phone, required String name}) async {
+    final msg = Uri.encodeComponent(
+      'أهلاً $name! 👋\n\n'
+      'تم استلام طلب تسجيلك كفني في Home Service ✅\n\n'
+      'جاري مراجعة بياناتك.\n'
+      'سيتم التواصل معك خلال 24-48 ساعة.\n\n'
+      'شكراً لاهتمامك! 🏠',
+    );
+    final url = 'https://wa.me/${_formatPhone(phone)}?text=$msg';
+    try { await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication); } catch (_) {}
+  }
+
+  Future<void> _notifyAdmin({required String techName, required String techPhone, required String specs}) async {
+    final msg = Uri.encodeComponent(
+      '🔔 طلب تسجيل فني جديد\n\n'
+      'الاسم: $techName\n'
+      'الموبايل: $techPhone\n'
+      'التخصصات: $specs\n\n'
+      'راجع الطلب في Firebase Console',
+    );
+    final url = 'https://wa.me/${_formatPhone(_adminPhone)}?text=$msg';
+    try { await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication); } catch (_) {}
   }
 }
