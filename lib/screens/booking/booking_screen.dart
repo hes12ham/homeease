@@ -142,6 +142,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   city: _addressController.text.split('،').first.trim(),
                   date: booking.selectedDate ?? DateTime.now(),
                   timeSlot: booking.selectedTimeSlot ?? '',
+                  problemDescription: _problemController.text.trim(),
                 ),
               ),
             );
