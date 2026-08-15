@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 
@@ -29,11 +31,35 @@ class CartProvider extends ChangeNotifier {
       ));
     }
     notifyListeners();
+    _saveCart();
+  }
+
+  // Save cart to local storage
+  Future<void> _saveCart() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cartJson = _items.map((item) => item.toMap()).toList();
+      await prefs.setString('saved_cart', json.encode(cartJson));
+    } catch (_) {}
+  }
+
+  // Load cart from local storage
+  Future<void> loadCart() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cartString = prefs.getString('saved_cart');
+      if (cartString != null) {
+        final List<dynamic> cartList = json.decode(cartString);
+        _items = cartList.map((item) => CartItem.fromMap(item as Map<String, dynamic>)).toList();
+        notifyListeners();
+      }
+    } catch (_) {}
   }
 
   void removeItem(String serviceId) {
     _items.removeWhere((item) => item.serviceId == serviceId);
     notifyListeners();
+    _saveCart();
   }
 
   void updateQuantity(String serviceId, int quantity) {
@@ -71,5 +97,6 @@ class CartProvider extends ChangeNotifier {
   void clearCart() {
     _items.clear();
     notifyListeners();
+    _saveCart();
   }
 }

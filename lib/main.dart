@@ -50,7 +50,15 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
-      child: const HomeServiceApp(),
+      child: Builder(
+        builder: (context) {
+          // Load saved cart on startup
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            try { Provider.of<CartProvider>(context, listen: false).loadCart(); } catch (_) {}
+          });
+          return const HomeServiceApp();
+        },
+      ),
     ),
   );
 }
