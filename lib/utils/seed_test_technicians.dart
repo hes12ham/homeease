@@ -10,30 +10,7 @@ class TestDataSeeder {
     if (existing.docs.isNotEmpty) {
       debugPrint('Test technicians already exist');
       return;
-    
-  static Future<void> _createTestTechAccount(FirebaseFirestore firestore) async {
-    try {
-      // Check if test account exists
-      final existing = await firestore.collection('users')
-          .where('email', isEqualTo: 'tech@homeservice.app').get();
-      if (existing.docs.isNotEmpty) return;
-
-      // Save test tech user info (actual auth created by admin)
-      await firestore.collection('test_accounts').doc('technician').set({
-        'email': 'tech@homeservice.app',
-        'password': 'Tech123456',
-        'role': 'technician',
-        'note': 'حساب فني تجريبي - استخدمه لتسجيل الدخول كفني',
-      });
-      
-      debugPrint('✅ Test tech account info saved');
-      debugPrint('📧 Email: tech@homeservice.app');
-      debugPrint('🔑 Password: Tech123456');
-    } catch (e) {
-      debugPrint('Test account: \$e');
     }
-  }
-}
 
     final techs = [
       {'fullName': 'أحمد محمد حسن', 'phone': '01012345671', 'address': 'قليوب', 'governorate': 'القليوبية', 'city': 'قليوب', 'specializations': ['electrical'], 'experience': '8 سنوات', 'bio': 'فني كهرباء متخصص', 'status': 'approved', 'isAvailable': true, 'rating': 4.8, 'completedJobs': 142, 'createdAt': FieldValue.serverTimestamp()},
@@ -49,76 +26,7 @@ class TestDataSeeder {
 
     for (final tech in techs) {
       await firestore.collection('technician_applications').add(tech);
-    
-  static Future<void> _createTestTechAccount(FirebaseFirestore firestore) async {
-    try {
-      // Check if test account exists
-      final existing = await firestore.collection('users')
-          .where('email', isEqualTo: 'tech@homeservice.app').get();
-      if (existing.docs.isNotEmpty) return;
-
-      // Save test tech user info (actual auth created by admin)
-      await firestore.collection('test_accounts').doc('technician').set({
-        'email': 'tech@homeservice.app',
-        'password': 'Tech123456',
-        'role': 'technician',
-        'note': 'حساب فني تجريبي - استخدمه لتسجيل الدخول كفني',
-      });
-      
-      debugPrint('✅ Test tech account info saved');
-      debugPrint('📧 Email: tech@homeservice.app');
-      debugPrint('🔑 Password: Tech123456');
-    } catch (e) {
-      debugPrint('Test account: \$e');
     }
-  }
-}
     debugPrint('✅ Seeded ${techs.length} test technicians');
-  
-  static Future<void> _createTestTechAccount(FirebaseFirestore firestore) async {
-    try {
-      // Check if test account exists
-      final existing = await firestore.collection('users')
-          .where('email', isEqualTo: 'tech@homeservice.app').get();
-      if (existing.docs.isNotEmpty) return;
-
-      // Save test tech user info (actual auth created by admin)
-      await firestore.collection('test_accounts').doc('technician').set({
-        'email': 'tech@homeservice.app',
-        'password': 'Tech123456',
-        'role': 'technician',
-        'note': 'حساب فني تجريبي - استخدمه لتسجيل الدخول كفني',
-      });
-      
-      debugPrint('✅ Test tech account info saved');
-      debugPrint('📧 Email: tech@homeservice.app');
-      debugPrint('🔑 Password: Tech123456');
-    } catch (e) {
-      debugPrint('Test account: \$e');
-    }
-  }
-}
-
-  static Future<void> _createTestTechAccount(FirebaseFirestore firestore) async {
-    try {
-      // Check if test account exists
-      final existing = await firestore.collection('users')
-          .where('email', isEqualTo: 'tech@homeservice.app').get();
-      if (existing.docs.isNotEmpty) return;
-
-      // Save test tech user info (actual auth created by admin)
-      await firestore.collection('test_accounts').doc('technician').set({
-        'email': 'tech@homeservice.app',
-        'password': 'Tech123456',
-        'role': 'technician',
-        'note': 'حساب فني تجريبي - استخدمه لتسجيل الدخول كفني',
-      });
-      
-      debugPrint('✅ Test tech account info saved');
-      debugPrint('📧 Email: tech@homeservice.app');
-      debugPrint('🔑 Password: Tech123456');
-    } catch (e) {
-      debugPrint('Test account: \$e');
-    }
   }
 }
