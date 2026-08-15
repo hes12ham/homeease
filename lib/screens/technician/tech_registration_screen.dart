@@ -548,8 +548,46 @@ class _TechRegistrationBody extends StatelessWidget {
       case 3:
         error = reg.validateStep4();
         if (error == null) {
-          final auth = context.read<AuthProvider>();
-          reg.submitApplication(auth.firebaseUser!.uid);
+          // Submit without requiring login
+          final success = await reg.submitApplicationDirect();
+          if (context.mounted && success) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (ctx) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 64),
+                    const SizedBox(height: 16),
+                    const Text('تم إرسال طلبك بنجاح! 🎉',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 10),
+                    Text('سيتم مراجعة بياناتك والتواصل معك خلال 24-48 ساعة',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          Navigator.of(context).popUntil((route) => route.isFirst);
+                        },
+                        child: const Text('تم'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('حصل خطأ، حاول تاني'), backgroundColor: Colors.red),
+            );
+          }
           return;
         }
         break;

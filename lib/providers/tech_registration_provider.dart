@@ -177,7 +177,55 @@ class TechRegistrationProvider extends ChangeNotifier {
     return await ref.getDownloadURL();
   }
 
-  // Submit application
+
+  // Submit without auth/upload (saves directly to Firestore)
+  Future<bool> submitApplicationDirect() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final data = {
+        'fullName': fullNameController.text.trim(),
+        'phone': phoneController.text.trim(),
+        'address': addressController.text.trim(),
+        'governorate': _governorate,
+        'specializations': _selectedSpecs,
+        'experience': experienceController.text.trim(),
+        'bio': bioController.text.trim(),
+        'status': 'pending',
+        'isAvailable': false,
+        'rating': 0.0,
+        'completedJobs': 0,
+        'createdAt': FieldValue.serverTimestamp(),
+      };
+
+      await FirebaseFirestore.instance
+          .collection('technician_applications')
+          .add(data);
+
+      _submitted = true;
+      _applicationStatus = TechnicianStatus.pending;
+      _isLoading = false;
+      notifyListeners();
+
+      // Send WhatsApp notification
+      try {
+        await _sendWhatsAppNotification(
+          phone: phoneController.text.trim(),
+          name: fullNameController.text.trim(),
+        );
+      } catch (_) {}
+
+      return true;
+    } catch (e) {
+      _isLoading = false;
+      debugPrint('Submit error: $e');
+      notifyListeners();
+      return false;
+    }
+  }
+
+  // Submit application (legacy - requires auth)
   Future<bool> submitApplication(String userId) async {
     _isLoading = true;
     notifyListeners();
