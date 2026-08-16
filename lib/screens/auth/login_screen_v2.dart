@@ -341,10 +341,12 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final email = '${_phoneCtrl.text.trim()}@homeease.app';
+      final email = '${_phoneCtrl.text.trim()}@homeservice.app';
       await context.read<AuthProvider>().signInWithEmail(email, _passCtrl.text);
 
       if (mounted) {
+        // Wait for user data to load from Firestore
+        await Future.delayed(const Duration(seconds: 1));
         // Route based on user role
         final auth = context.read<AuthProvider>();
         if (auth.user?.role == 'technician') {
