@@ -38,7 +38,7 @@ class CartProvider extends ChangeNotifier {
   Future<void> _saveCart() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final cartJson = _items.map((item) => item.toMap()).toList();
+      final cartJson = _items.map((item) => item.toMap()).toList());
       await prefs.setString('saved_cart', json.encode(cartJson));
     } catch (_) {}
   }
@@ -51,7 +51,7 @@ class CartProvider extends ChangeNotifier {
       if (cartString != null) {
         final List<dynamic> cartList = json.decode(cartString);
         _items.clear();
-        _items.addAll(cartList.map((item) => CartItem.fromMap(item as Map<String, dynamic>)).toList();
+        _items.addAll(cartList.map((item) => CartItem.fromMap(item as Map<String, dynamic>)).toList());
         notifyListeners();
       }
     } catch (_) {}
