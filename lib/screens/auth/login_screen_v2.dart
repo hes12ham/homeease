@@ -345,11 +345,19 @@ class _LoginScreenState extends State<LoginScreen> {
       await context.read<AuthProvider>().signInWithEmail(email, _passCtrl.text);
 
       if (mounted) {
-        // Wait for user data to load from Firestore
-        await Future.delayed(const Duration(seconds: 1));
-        // Route based on user role
+        // Wait and retry until user data loads
         final auth = context.read<AuthProvider>();
-        if (auth.user?.role == 'technician') {
+        String? role;
+        for (int i = 0; i < 5; i++) {
+          await Future.delayed(const Duration(milliseconds: 500));
+          role = auth.user?.role;
+          if (role != null) break;
+        }
+        
+        if (!mounted) return;
+        debugPrint('👤 User role: \$role');
+        
+        if (role == 'technician') {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const TechMainScreen()),
             (route) => false,
