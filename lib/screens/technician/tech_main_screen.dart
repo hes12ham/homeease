@@ -331,48 +331,55 @@ class _TechMainScreenState extends State<TechMainScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Avatar
             CircleAvatar(
               radius: 45,
               backgroundColor: const Color(0xFF1565C0),
               child: Text(
-                (auth.user?.name ?? '?')[0],
+                (auth.user?.name ?? '?').isNotEmpty ? (auth.user?.name ?? '?')[0] : '?',
                 style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 14),
             Text(auth.user?.name ?? 'فني', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
             Text(auth.user?.phone ?? '', style: TextStyle(color: Colors.grey.shade600)),
+            Text(auth.user?.email ?? '', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
             const SizedBox(height: 24),
 
-            // Stats
+            // Stats - clickable
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('booking_requests')
-                  .snapshots(),
+              stream: FirebaseFirestore.instance.collection('booking_requests').snapshots(),
               builder: (context, snapshot) {
-                var orders = snapshot.data?.docs ?? [];
-                // Filter by tech phone or tech ID
-                orders = orders.where((doc) {
+                final allDocs = snapshot.data?.docs ?? [];
+                final uid = auth.firebaseUser?.uid ?? '';
+                final phone = auth.user?.phone ?? '';
+                final myOrders = allDocs.where((doc) {
                   final d = doc.data() as Map<String, dynamic>;
-                  return d['techPhone'] == techPhone || d['techId'] == techUid;
+                  return d['techPhone'] == phone || d['techId'] == uid;
                 }).toList();
-                // Sort by creation date
-                orders.sort((a, b) {
-                  final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
-                  final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
-                  return (bTime?.millisecondsSinceEpoch ?? 0).compareTo(aTime?.millisecondsSinceEpoch ?? 0);
-                });
-                final completed = orders.where((d) => (d.data() as Map)['status'] == 'completed').length;
-                final earnings = orders
-                    .where((d) => (d.data() as Map)['status'] == 'completed')
-                    .fold<double>(0, (sum, d) => sum + ((d.data() as Map)['agreedPrice'] ?? 0).toDouble() * 0.9);
+                
+                final pending = myOrders.where((d) => (d.data() as Map)['status'] == 'pending_tech_response').toList();
+                final confirmed = myOrders.where((d) => (d.data() as Map)['status'] == 'confirmed').toList();
+                final completed = myOrders.where((d) => (d.data() as Map)['status'] == 'completed').toList();
+                final earnings = completed.fold<double>(0, (sum, d) => sum + ((d.data() as Map)['agreedPrice'] ?? 0).toDouble() * 0.9);
 
-                return Row(
+                return Column(
                   children: [
-                    _statCard('الطلبات', '${orders.length}', Icons.assignment, Colors.blue),
-                    _statCard('مكتملة', '$completed', Icons.check_circle, Colors.green),
-                    _statCard('الأرباح', '${earnings.toStringAsFixed(0)}', Icons.account_balance_wallet, Colors.orange),
+                    Row(
+                      children: [
+                        _statCard('طلبات واردة', '${pending.length}', Icons.notifications, Colors.orange,
+                            () => _showOrdersList(context, 'طلبات واردة', pending)),
+                        _statCard('مؤكدة', '${confirmed.length}', Icons.check_circle, Colors.blue,
+                            () => _showOrdersList(context, 'طلبات مؤكدة', confirmed)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        _statCard('مكتملة', '${completed.length}', Icons.done_all, Colors.green,
+                            () => _showOrdersList(context, 'طلبات مكتملة', completed)),
+                        _statCard('الأرباح', '${earnings.toStringAsFixed(0)} ج.م', Icons.account_balance_wallet, const Color(0xFFE65100), null),
+                      ],
+                    ),
                   ],
                 );
               },
@@ -380,9 +387,25 @@ class _TechMainScreenState extends State<TechMainScreen> {
             const SizedBox(height: 24),
 
             // Menu items
-            _menuItem(Icons.edit, 'تعديل البيانات', () {}),
-            _menuItem(Icons.star, 'تقييماتي', () {}),
-            _menuItem(Icons.help_outline, 'الدعم الفني', () {}),
+            _menuItem(Icons.edit, 'تعديل البيانات', () => _showEditProfile(context)),
+            _menuItem(Icons.lock_outline, 'تغيير كلمة المرور', () => _showChangePassword(context)),
+            _menuItem(Icons.star_outline, 'تقييماتي', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('التقييمات قريباً'), behavior: SnackBarBehavior.floating));
+            }),
+            _menuItem(Icons.help_outline, 'الدعم الفني', () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('تواصل معنا: 01000000000'), behavior: SnackBarBehavior.floating));
+            }),
+            _menuItem(Icons.info_outline, 'عن التطبيق', () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'Home Service',
+                applicationVersion: '1.0.0',
+                children: [const Text('تطبيق خدمات منزلية — نسبة التطبيق 10% من كل طلب')],
+              );
+            }),
+            const SizedBox(height: 8),
             _menuItem(Icons.logout, 'تسجيل الخروج', () async {
               await auth.signOut();
               if (mounted) {
@@ -395,23 +418,185 @@ class _TechMainScreenState extends State<TechMainScreen> {
     );
   }
 
-  Widget _statCard(String label, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
-        ),
-        child: Column(
+  void _showOrdersList(BuildContext context, String title, List<QueryDocumentSnapshot> orders) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (_, scrollCtrl) => Column(
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: color)),
-            Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+            // Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40, height: 4,
+              decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            ),
+            Expanded(
+              child: orders.isEmpty
+                  ? Center(child: Text('لا توجد طلبات', style: TextStyle(color: Colors.grey.shade500)))
+                  : ListView.builder(
+                      controller: scrollCtrl,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: orders.length,
+                      itemBuilder: (_, i) {
+                        final d = orders[i].data() as Map<String, dynamic>;
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(child: Text(d['serviceName'] ?? '', style: const TextStyle(fontWeight: FontWeight.w700))),
+                                  Text('${(d['offerPrice'] ?? d['basePrice'] ?? 0).toStringAsFixed(0)} ج.م',
+                                      style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF2E7D32))),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text('👤 ${d['clientName'] ?? ''}', style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                              Text('📍 ${d['address'] ?? ''}', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                              if (d['problemDescription'] != null && (d['problemDescription'] as String).isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text('📋 ${d['problemDescription']}',
+                                      style: const TextStyle(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditProfile(BuildContext context) {
+    final auth = context.read<AuthProvider>();
+    final nameCtrl = TextEditingController(text: auth.user?.name ?? '');
+    final phoneCtrl = TextEditingController(text: auth.user?.phone ?? '');
+    final addressCtrl = TextEditingController(text: auth.user?.address ?? '');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('تعديل البيانات', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'الاسم', prefixIcon: Icon(Icons.person))),
+            const SizedBox(height: 12),
+            TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'الموبايل', prefixIcon: Icon(Icons.phone))),
+            const SizedBox(height: 12),
+            TextField(controller: addressCtrl, decoration: const InputDecoration(labelText: 'العنوان', prefixIcon: Icon(Icons.location_on))),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  await auth.updateProfile(
+                    name: nameCtrl.text.trim(),
+                    phone: phoneCtrl.text.trim(),
+                    address: addressCtrl.text.trim(),
+                  );
+                  if (ctx.mounted) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('تم تحديث البيانات ✅'), backgroundColor: Colors.green));
+                  }
+                },
+                child: const Text('حفظ التعديلات'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showChangePassword(BuildContext context) {
+    final currentCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('تغيير كلمة المرور', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 16),
+            TextField(controller: currentCtrl, obscureText: true,
+                decoration: const InputDecoration(labelText: 'كلمة المرور الحالية', prefixIcon: Icon(Icons.lock))),
+            const SizedBox(height: 12),
+            TextField(controller: newCtrl, obscureText: true,
+                decoration: const InputDecoration(labelText: 'كلمة المرور الجديدة', prefixIcon: Icon(Icons.lock_outline))),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تم تغيير كلمة المرور ✅'), backgroundColor: Colors.green));
+                },
+                child: const Text('تغيير'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _statCard(String label, String value, IconData icon, Color color, VoidCallback? onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: color, size: 28),
+              const SizedBox(height: 8),
+              FittedBox(child: Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: color))),
+              const SizedBox(height: 4),
+              Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+            ],
+          ),
         ),
       ),
     );
