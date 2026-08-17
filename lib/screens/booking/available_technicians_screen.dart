@@ -178,13 +178,19 @@ class _State extends State<AvailableTechniciansScreen> {
                 stream: FirebaseFirestore.instance
                     .collection('technician_applications')
                     .where('status', isEqualTo: 'approved')
-                    .where('specializations', arrayContains: widget.category)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  final techs = snapshot.data?.docs ?? [];
+                  // Filter by category client-side
+                  final allTechs = snapshot.data?.docs ?? [];
+                  final techs = allTechs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final specs = (data['specializations'] as List<dynamic>?) ?? [];
+                    return specs.contains(widget.category);
+                  }).toList();
+                  debugPrint('🔍 Category: \${widget.category}, Found: \${techs.length} techs (from \${allTechs.length} total)');
                   if (techs.isEmpty) {
                     return Center(
                       child: Column(
