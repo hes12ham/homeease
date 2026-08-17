@@ -1,3 +1,4 @@
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,20 +81,36 @@ class _TechMainScreenState extends State<TechMainScreen> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.circle, size: 8, color: Colors.greenAccent),
-                      SizedBox(width: 4),
-                      Text('متاح', style: TextStyle(color: Colors.white, fontSize: 11)),
-                    ],
-                  ),
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('technician_applications')
+                      .doc(_getTechDocId(auth))
+                      .snapshots(),
+                  builder: (context, snap) {
+                    final isAvailable = (snap.data?.data() as Map?)?['isAvailable'] ?? true;
+                    return GestureDetector(
+                      onTap: () => _toggleAvailability(auth, !isAvailable),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: isAvailable
+                              ? Colors.green.withValues(alpha: 0.3)
+                              : Colors.red.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.circle, size: 8,
+                                color: isAvailable ? Colors.greenAccent : Colors.redAccent),
+                            const SizedBox(width: 4),
+                            Text(isAvailable ? 'متاح' : 'غير متاح',
+                                style: const TextStyle(color: Colors.white, fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -263,24 +280,39 @@ class _TechMainScreenState extends State<TechMainScreen> {
 
           // Action buttons
           if (status == 'pending_tech_response')
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _rejectOrder(orderId),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
+                // Accept at current price
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => _rejectOrder(orderId),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                        ),
+                        child: const Text('رفض'),
+                      ),
                     ),
-                    child: const Text('رفض'),
-                  ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _acceptOrder(orderId, data),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                        child: const Text('قبول بالسعر'),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _acceptOrder(orderId, data),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: const Text('قبول'),
+                const SizedBox(height: 8),
+                // Counter offer
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.edit, size: 16),
+                    label: const Text('عرض سعر مختلف'),
+                    onPressed: () => _showCounterOffer(orderId, data),
                   ),
                 ),
               ],
@@ -293,12 +325,21 @@ class _TechMainScreenState extends State<TechMainScreen> {
                   child: ElevatedButton.icon(
                     icon: const Icon(Icons.phone, size: 16),
                     label: const Text('اتصل بالعميل'),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     onPressed: () {
                       final phone = data['clientPhone'] ?? '';
                       if (phone.isNotEmpty) {
-                        // launchUrl for phone
+                        launchUrl(Uri.parse('tel:\$phone'));
                       }
                     },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.check, size: 16),
+                    label: const Text('إتمام الطلب'),
+                    onPressed: () => _completeOrder(orderId),
                   ),
                 ),
               ],
@@ -306,6 +347,28 @@ class _TechMainScreenState extends State<TechMainScreen> {
         ],
       ),
     );
+  }
+
+  String? _techDocIdCache;
+  
+  String _getTechDocId(AuthProvider auth) {
+    return _techDocIdCache ?? auth.firebaseUser?.uid ?? '';
+  }
+
+  Future<void> _toggleAvailability(AuthProvider auth, bool available) async {
+    try {
+      // Find tech document by phone
+      final phone = auth.user?.phone ?? '';
+      final docs = await FirebaseFirestore.instance
+          .collection('technician_applications')
+          .where('phone', isEqualTo: phone)
+          .get();
+      
+      if (docs.docs.isNotEmpty) {
+        _techDocIdCache = docs.docs.first.id;
+        await docs.docs.first.reference.update({'isAvailable': available});
+      }
+    } catch (_) {}
   }
 
   Future<void> _acceptOrder(String orderId, Map<String, dynamic> data) async {
@@ -319,6 +382,69 @@ class _TechMainScreenState extends State<TechMainScreen> {
     await FirebaseFirestore.instance.collection('booking_requests').doc(orderId).update({
       'status': 'cancelled',
     });
+  }
+
+  Future<void> _completeOrder(String orderId) async {
+    await FirebaseFirestore.instance.collection('booking_requests').doc(orderId).update({
+      'status': 'completed',
+    });
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم إتمام الطلب بنجاح ✅'), backgroundColor: Colors.green));
+    }
+  }
+
+  void _showCounterOffer(String orderId, Map<String, dynamic> data) {
+    final priceCtrl = TextEditingController(
+      text: (data['offerPrice'] ?? data['basePrice'] ?? 0).toStringAsFixed(0),
+    );
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('عرض سعر مختلف'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('سعر العميل: ${(data['offerPrice'] ?? data['basePrice'] ?? 0).toStringAsFixed(0)} ج.م',
+                style: TextStyle(color: Colors.grey.shade600)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: priceCtrl,
+              keyboardType: TextInputType.number,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'السعر المقترح',
+                suffixText: 'ج.م',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+          ElevatedButton(
+            onPressed: () async {
+              final newPrice = double.tryParse(priceCtrl.text);
+              if (newPrice == null || newPrice <= 0) return;
+              
+              await FirebaseFirestore.instance.collection('booking_requests').doc(orderId).update({
+                'techCounterPrice': newPrice,
+                'status': 'tech_counter_offer',
+              });
+              
+              if (ctx.mounted) Navigator.pop(ctx);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('تم إرسال عرض ${newPrice.toStringAsFixed(0)} ج.م للعميل'), backgroundColor: Colors.blue));
+              }
+            },
+            child: const Text('إرسال العرض'),
+          ),
+        ],
+      ),
+    );
   }
 
   // ===== PROFILE TAB =====

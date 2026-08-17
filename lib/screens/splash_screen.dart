@@ -42,11 +42,16 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       final auth = context.read<AuthProvider>();
       if (auth.firebaseUser != null) {
-        // Wait for user data to load
-        await Future.delayed(const Duration(milliseconds: 500));
+        // Wait and retry for user data to load
+        String? role;
+        for (int i = 0; i < 8; i++) {
+          await Future.delayed(const Duration(milliseconds: 400));
+          role = auth.user?.role;
+          if (role != null) break;
+        }
         if (!mounted) return;
         
-        if (auth.user?.role == 'technician') {
+        if (role == 'technician') {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => const TechMainScreen()),
           );
