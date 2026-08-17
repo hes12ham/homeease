@@ -43,6 +43,7 @@ class _TechMainScreenState extends State<TechMainScreen> {
   Widget _buildOrdersTab() {
     final auth = context.watch<AuthProvider>();
     final techPhone = auth.user?.phone ?? '';
+    final techUid = auth.firebaseUser?.uid ?? '';
 
     return SafeArea(
       child: Column(
@@ -113,8 +114,6 @@ class _TechMainScreenState extends State<TechMainScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('booking_requests')
-                  .where('techPhone', isEqualTo: techPhone)
-                  .orderBy('createdAt', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -122,7 +121,18 @@ class _TechMainScreenState extends State<TechMainScreen> {
                 }
 
                 // Also check by techId
-                final orders = snapshot.data?.docs ?? [];
+                var orders = snapshot.data?.docs ?? [];
+                // Filter by tech phone or tech ID
+                orders = orders.where((doc) {
+                  final d = doc.data() as Map<String, dynamic>;
+                  return d['techPhone'] == techPhone || d['techId'] == techUid;
+                }).toList();
+                // Sort by creation date
+                orders.sort((a, b) {
+                  final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
+                  final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
+                  return (bTime?.millisecondsSinceEpoch ?? 0).compareTo(aTime?.millisecondsSinceEpoch ?? 0);
+                });
 
                 if (orders.isEmpty) {
                   return Center(
@@ -339,10 +349,20 @@ class _TechMainScreenState extends State<TechMainScreen> {
             StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('booking_requests')
-                  .where('techPhone', isEqualTo: auth.user?.phone ?? '')
                   .snapshots(),
               builder: (context, snapshot) {
-                final orders = snapshot.data?.docs ?? [];
+                var orders = snapshot.data?.docs ?? [];
+                // Filter by tech phone or tech ID
+                orders = orders.where((doc) {
+                  final d = doc.data() as Map<String, dynamic>;
+                  return d['techPhone'] == techPhone || d['techId'] == techUid;
+                }).toList();
+                // Sort by creation date
+                orders.sort((a, b) {
+                  final aTime = (a.data() as Map)['createdAt'] as Timestamp?;
+                  final bTime = (b.data() as Map)['createdAt'] as Timestamp?;
+                  return (bTime?.millisecondsSinceEpoch ?? 0).compareTo(aTime?.millisecondsSinceEpoch ?? 0);
+                });
                 final completed = orders.where((d) => (d.data() as Map)['status'] == 'completed').length;
                 final earnings = orders
                     .where((d) => (d.data() as Map)['status'] == 'completed')
